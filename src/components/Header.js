@@ -5,11 +5,13 @@ import appLogo from "../assets/icons/appLogo.svg";
 import bottomArrow from "../assets/icons/bottomArrow.svg";
 
 const Wrapper = styled.div`
+  max-width: 1920px;
   height: 100px;
+  padding: 0 100px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 100px;
+  margin: 0 auto;
   position: sticky;
   top: 0;
   z-index: 10;

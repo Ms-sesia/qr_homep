@@ -2,30 +2,33 @@ import React from "react";
 import styled, {keyframes} from "styled-components";
 import logoImage from "../assets/icons/logo.svg";
 import appLogo from "../assets/icons/appLogo.svg";
-
+import mainImages from "../assets/mainImages/mainImages.png";
 import image1 from "../assets/mainImages/image1.png";
 import image2 from "../assets/mainImages/image2.png";
 import image3 from "../assets/mainImages/image3.png";
 import image4 from "../assets/mainImages/image4.png";
 import image5 from "../assets/mainImages/image5.png";
 
-const ImageBoxAnimation = keyframes`
+const TextAnimation = keyframes`
   0% {
-    width: 200px;
-    height: 200px;
-    border-radius: 50%;
-    box-shadow: 0 4px 6px 10px rgba(0, 0, 0, 0.15);
-  }
-  55% {
-    width: 1000px;
-    height: 1000px;
-    border-radius: 50%;
-    box-shadow: 0 4px 6px 10px rgba(0, 0, 0, 0.15);
+    opacity: 0;
+    transform: translateY(100%);
   }
   100% {
-    width: 100%;
-    height: 100%;
-    border-radius: 0;
+    opacity: 1;
+    transform: translateY(0);
+  }
+`;
+const ImageBoxAnimation = keyframes`
+  0% {
+    clip-path: circle(10% at center);
+    margin-bottom: 1500px;
+  }
+  56% {
+    clip-path: circle(35% at center);
+  }
+  100% {
+    clip-path: circle(100% at center);
   }
 `;
 const Wrapper = styled.div`
@@ -45,7 +48,8 @@ const TitleBox = styled.div`
 const Title = styled.div`
   font-size: 66px;
   font-weight: 700;
-  
+  animation: ${TextAnimation} 1.2s;
+
   @media only screen and (max-width: 768px) {
     font-size: 42px;
   }
@@ -56,6 +60,7 @@ const Logo = styled.div`
   margin: 0 auto 28px;
   background: url(${logoImage}) no-repeat;
   background-size: 100% 100%;
+  animation: ${TextAnimation} .8s;
 
   @media only screen and (max-width: 768px) {
     width: 140px;
@@ -65,40 +70,20 @@ const Logo = styled.div`
 const Text = styled.span`
   font-size: 42px;
   font-weight: 600;
-  margin: ${({ margin }) => margin ? margin : 0};
+  margin: ${({margin}) => margin ? margin : 0};
 
   @media only screen and (max-width: 768px) {
     font-size: 32px;
   }
 `;
-const Contents = styled.div`
-  height: calc(100vw / 5 * 1.8 * 2);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-`;
 const ImageBox = styled.div`
   width: 100%;
   height: 100%;
-  overflow: hidden;
-  animation: ${ImageBoxAnimation} 0.7s 1.6s linear;
-  animation-fill-mode: both;
-`;
-const ImageWrapper = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-wrap: wrap;
-`;
-const FlexBox = styled.div`
-  width: calc(100% / 5);
-  height: calc(100vw / 5 * 1.8);
-  max-height: 542px;
+  animation: ${ImageBoxAnimation} 1.5s linear;
 `;
 const Image = styled.img`
   width: 100%;
   height: 100%;
-  object-fit: cover;
 `;
 const AppLogo = styled.div`
   width: 150px;
@@ -110,6 +95,10 @@ const AppLogo = styled.div`
     height: 120px;
     margin: 180px auto 80px;
   }
+`;
+const LogoImage = styled.img`
+  width: 100%;
+  height: 100%;
 `;
 const Description = styled.div`
   line-height: 1.4;
@@ -128,29 +117,16 @@ const TopImages = () => {
     return (
         <Wrapper>
             <TitleBox>
-                <Logo />
+                <Logo/>
                 <Title>안심 주차 번호판, 시큐릿</Title>
             </TitleBox>
-            <Contents>
-                <ImageBox>
-                    <ImageWrapper>
-                        <FlexBox><Image src={image1} /></FlexBox>
-                        <FlexBox><Image src={image2} /></FlexBox>
-                        <FlexBox><Image src={image3} /></FlexBox>
-                        <FlexBox><Image src={image4} /></FlexBox>
-                        <FlexBox><Image src={image5} /></FlexBox>
-                    </ImageWrapper>
-                    <ImageWrapper>
-                        <FlexBox><Image src={image4} /></FlexBox>
-                        <FlexBox><Image src={image2} /></FlexBox>
-                        <FlexBox><Image src={image5} /></FlexBox>
-                        <FlexBox><Image src={image3} /></FlexBox>
-                        <FlexBox><Image src={image1} /></FlexBox>
-                    </ImageWrapper>
-                </ImageBox>
-            </Contents>
+
+            <ImageBox>
+                <Image src={mainImages}/>
+            </ImageBox>
+
             <AppLogo>
-                <Image src={appLogo} />
+                <LogoImage src={appLogo}/>
             </AppLogo>
             <Description>
                 <Text>간편한 QR코드로</Text>

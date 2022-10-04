@@ -163,12 +163,8 @@ const App = () => {
         return () => window.removeEventListener("scroll", onScroll);
     }, []);
 
-    useEffect(() => {
-        console.info(window.scrollY);
-    }, [window.scrollY]);
-
     return (
-        <Wrapper>
+        <>
             <GlobalStyles/>
 
             {display
@@ -223,12 +219,14 @@ const App = () => {
                                 </ScrollWrapper>
                             </ContentBox>
                         </ContentWrapper>
-                        <Bottom />
-                        <Footer />
+                        <Wrapper>
+                            <Bottom />
+                            <Footer />
+                        </Wrapper>
                     </>
                 }
             {/*<ScrollToTop />*/}
-        </Wrapper>
+        </>
     );
 }
 

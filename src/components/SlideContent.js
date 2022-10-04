@@ -48,6 +48,7 @@ const PositionBox = styled.div`
 
 const Box = styled.div`
   width: 480px;
+  min-height: 300px;
   word-break: keep-all;
   padding: 20px;
 
@@ -127,10 +128,9 @@ const ImageBox = styled.picture`
 const Image = styled.img`
   width: ${({width}) => width}%;
   ${({height}) =>
-    height &&
-    css`
-            height: ${height}%;
-          `};
+    height && css`
+    height: ${height}%;
+  `};
 `;
 const ButtonGroup = styled.div`
   display: flex;
@@ -149,7 +149,7 @@ const SlideButton = styled.div`
   padding: 10px;
   border-radius: 22px;
   text-align: center;
-  background-color: ${colors.lightGray};
+  background-color: ${colors.borderGrayColor};
   margin: 40px;
   cursor: pointer;
 
