@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import styled, { css } from "styled-components";
 import colors from "../../styles/colors";
 import callingImage from "../../assets/callingImage/callingImage.svg";
@@ -19,6 +19,7 @@ const Container = styled.div`
   background-color: ${colors.whiteColor};
   z-index: 1;
   /* border: 1px solid red; */
+  overflow: hidden;
 `;
 
 const Text = styled.div`
@@ -50,14 +51,47 @@ const CallButton = styled.div`
   cursor: pointer;
 `;
 
-const Send = ({ setSend }) => {
+const Audio = styled.audio`
+  width: 0;
+  height: 0;
+  position: fixed;
+  top: -1000px;
+  left: -1000px;
+`;
+
+const Send = ({ setSend, myAudio, peerAudio }) => {
+  const [hours, setHours] = useState(0);
+  const [minutes, setMinutes] = useState(59);
+  const [seconds, setSeconds] = useState(40);
+
+  useEffect(() => {
+    const time = setTimeout(() => {
+      if (seconds < 59) setSeconds(seconds + 1);
+      if (seconds === 59) {
+        setSeconds(0);
+        setMinutes(minutes + 1);
+      }
+      if (minutes === 59 && seconds === 59) {
+        setMinutes(0);
+        setHours(hours + 1);
+      }
+    }, 1000);
+
+    return () => clearTimeout(time);
+  }, [seconds, minutes]);
+
   return (
     <Container>
       <Text fontSize={20} fontWeight="bold" margin="0 0 15px 0">
         {"BMW X5"} 차주에게 전화 거는중
       </Text>
       <Text margin="0 0 77px 0" fontSize={14}>
-        {"00"}:{"30"}
+        {hours !== 0 && `${hours} : `}
+        {hours !== 0
+          ? minutes < 10
+            ? `0${minutes}`
+            : minutes
+          : minutes} : {seconds < 10 ? `0${seconds}` : seconds}
       </Text>
       <Image src={callingImage} />
       <Text fontSize={14} margin="15px 0 0 85px" CURSOR>
@@ -66,6 +100,8 @@ const Send = ({ setSend }) => {
       <CallButton onClick={() => setSend(false)}>
         <Image src={phoneIcon} ROTATE />
       </CallButton>
+      <Audio ref={myAudio} autoPlay playsInline />
+      <Audio ref={peerAudio} autoPlay playsInline />
     </Container>
   );
 };

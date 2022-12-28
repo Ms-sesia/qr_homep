@@ -7,7 +7,7 @@ import colors from "../../styles/colors";
 import MessageModal from "../../components/Calling/MessageModal";
 import Send from "../../components/Calling/Send";
 import appIcon from "../../assets/icons/appIcon.svg";
-import Receive from "../../components/Calling/Receive";
+import Call from "../../components/Calling/Call";
 
 const Container = styled.div`
   width: 100%;
@@ -62,8 +62,10 @@ const CallingPresenter = ({
   setMessage,
   send,
   setSend,
-  receive,
-  setReceive,
+  call,
+  setCall,
+  myAudio,
+  peerAudio,
 }) => {
   return (
     <>
@@ -76,14 +78,16 @@ const CallingPresenter = ({
         </RowBox>
         <Image src={callingImage} />
         <Text fontSize={14} margin="15px 0 66px 85px" CURSOR>
-          앱 보러가기
+          <a target="_blank" href="https://www.google.com">
+            앱 보러가기
+          </a>
         </Text>
-        <Button BG onClick={() => setReceive(true)}>
+        <Button BG onClick={() => setCall(true)}>
           전화하기
         </Button>
         <Button onClick={() => setMessage(true)}>메세지 보내기</Button>
-        {receive && (
-          <Receive
+        {call && (
+          <Call
             send={send}
             setSend={setSend}
             message={message}
@@ -91,7 +95,9 @@ const CallingPresenter = ({
           />
         )}
         {message && <MessageModal setMessage={setMessage} />}
-        {send && <Send setSend={setSend} />}
+        {send && (
+          <Send setSend={setSend} myAudio={myAudio} peerAudio={peerAudio} />
+        )}
       </Container>
     </>
   );

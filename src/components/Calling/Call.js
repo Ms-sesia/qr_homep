@@ -4,8 +4,8 @@ import callingImage from "../../assets/callingImage/callingImage.svg";
 import phoneIcon from "../../assets/callingImage/phoneIcon.svg";
 import messageIcon from "../../assets/callingImage/messageIcon.svg";
 import colors from "../../styles/colors";
-import MessageModal from "../../components/Calling/MessageModal";
-import Send from "../../components/Calling/Send";
+import MessageModal from "./MessageModal";
+import Send from "./Send";
 
 const Container = styled.div`
   width: 100%;
@@ -72,7 +72,7 @@ const Triangle = styled.div`
   margin-left: -7px;
 `;
 
-const Receive = ({ send, setSend, message, setMessage }) => {
+const Call = ({ send, setSend, message, setMessage }) => {
   const [display, setDisplay] = useState(true);
 
   useEffect(() => {
@@ -125,4 +125,4 @@ const Receive = ({ send, setSend, message, setMessage }) => {
   );
 };
 
-export default Receive;
+export default Call;
