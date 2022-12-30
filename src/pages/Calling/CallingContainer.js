@@ -1,7 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import CallingPresenter from "./CallingPresenter";
 import io from "socket.io-client";
-import { useNavigate } from "react-router-dom";
 
 const CallingContainer = () => {
   const [message, setMessage] = useState(false);
@@ -11,12 +10,16 @@ const CallingContainer = () => {
   let myPeerConnection;
   let myStream;
   const [roomName, setRoomName] = useState("abc");
-  const navigate = useNavigate();
   const myAudio = useRef();
   const peerAudio = useRef();
 
   //TODO:: 나중에 서버 바꾸기
-  const socket = io("http://localhost:8080");
+  const socket = io("http://localhost:8080", {
+    cors: {
+      origin: "*",
+      credentials: true,
+    },
+  });
 
   const getMedia = async (deviceId) => {
     try {
@@ -27,7 +30,19 @@ const CallingContainer = () => {
   };
 
   const makeConnection = () => {
-    myPeerConnection = new RTCPeerConnection();
+    myPeerConnection = new RTCPeerConnection({
+      iceServers: [
+        {
+          urls: [
+            "stun:stun.l.google.com:19302",
+            "stun:stun1.l.google.com:19302",
+            "stun:stun2.l.google.com:19302",
+            "stun:stun3.l.google.com:19302",
+            "stun:stun4.l.google.com:19302",
+          ],
+        },
+      ],
+    });
     myPeerConnection.addEventListener("icecandidate", handleIce);
     socket.emit("join_room", roomName);
     myPeerConnection.addEventListener("addstream", handleAddStream);
@@ -36,6 +51,7 @@ const CallingContainer = () => {
 
   const handleIce = (data) => {
     socket.emit("ice", data.candidate, roomName);
+    console.log("야아아아아");
   };
 
   const handleAddStream = (data) => {
@@ -56,12 +72,17 @@ const CallingContainer = () => {
   useEffect(() => {
     initCall();
 
+    socket.on("myId", (id) => {
+      setMyId(id);
+    });
+
     socket.on("welcome", async () => {
       const offer = await myPeerConnection.createOffer();
-      console.log("offer", offer);
-      // 이거 에러부터 잡아
-      // myPeerConnection.setLocalDescription(offer);
-      // socket.emit("offer", offer, roomName);
+      if (offer) {
+        myPeerConnection.setLocalDescription(offer);
+        socket.emit("offer", offer, roomName);
+        console.log("offer", offer);
+      }
     });
 
     socket.on("offer", async (offer) => {
@@ -70,7 +91,17 @@ const CallingContainer = () => {
       myPeerConnection.setLocalDescription(answer);
       socket.emit("answer", answer, roomName);
     });
+
+    socket.on("answer", (answer) => {
+      myPeerConnection.setRemoteDescription(answer);
+    });
+
+    socket.on("ice", (ice) => {
+      myPeerConnection.addIceCandidate(ice);
+    });
   }, []);
+
+  useEffect(() => console.log("myId:", myId), [myId]);
 
   return (
     <CallingPresenter

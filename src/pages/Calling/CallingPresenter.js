@@ -1,11 +1,9 @@
 import React from "react";
 import callingImage from "../../assets/callingImage/callingImage.svg";
-import phoneIcon from "../../assets/callingImage/phoneIcon.svg";
-import messageIcon from "../../assets/callingImage/messageIcon.svg";
 import styled from "styled-components";
 import colors from "../../styles/colors";
 import MessageModal from "../../components/Calling/MessageModal";
-import Send from "../../components/Calling/Send";
+import Calling from "../../components/Calling/Calling";
 import appIcon from "../../assets/icons/appIcon.svg";
 import Call from "../../components/Calling/Call";
 
@@ -57,6 +55,14 @@ const Button = styled.div`
   cursor: pointer;
 `;
 
+const Audio = styled.audio`
+  width: 0;
+  height: 0;
+  position: fixed;
+  top: -1000px;
+  left: -1000px;
+`;
+
 const CallingPresenter = ({
   message,
   setMessage,
@@ -86,6 +92,8 @@ const CallingPresenter = ({
           전화하기
         </Button>
         <Button onClick={() => setMessage(true)}>메세지 보내기</Button>
+
+        {/* 전화하기 버튼 눌렀을 때 */}
         {call && (
           <Call
             send={send}
@@ -94,11 +102,14 @@ const CallingPresenter = ({
             setMessage={setMessage}
           />
         )}
+
         {message && <MessageModal setMessage={setMessage} />}
         {send && (
-          <Send setSend={setSend} myAudio={myAudio} peerAudio={peerAudio} />
+          <Calling setSend={setSend} myAudio={myAudio} peerAudio={peerAudio} />
         )}
       </Container>
+      <Audio ref={myAudio} autoPlay playsInline />
+      <Audio ref={peerAudio} autoPlay playsInline />
     </>
   );
 };

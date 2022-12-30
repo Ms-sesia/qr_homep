@@ -5,7 +5,7 @@ import phoneIcon from "../../assets/callingImage/phoneIcon.svg";
 import messageIcon from "../../assets/callingImage/messageIcon.svg";
 import colors from "../../styles/colors";
 import MessageModal from "./MessageModal";
-import Send from "./Send";
+import Send from "./Calling";
 
 const Container = styled.div`
   width: 100%;
