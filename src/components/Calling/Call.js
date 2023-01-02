@@ -1,11 +1,12 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import styled from "styled-components";
 import callingImage from "../../assets/callingImage/callingImage.svg";
 import phoneIcon from "../../assets/callingImage/phoneIcon.svg";
 import messageIcon from "../../assets/callingImage/messageIcon.svg";
 import colors from "../../styles/colors";
 import MessageModal from "./MessageModal";
-import Send from "./Calling";
+import Calling from "./Calling";
+import { CallingContext } from "../../pages/Calling/CallingContainer";
 
 const Container = styled.div`
   width: 100%;
@@ -72,14 +73,18 @@ const Triangle = styled.div`
   margin-left: -7px;
 `;
 
-const Call = ({ send, setSend, message, setMessage }) => {
+const Call = () => {
   const [display, setDisplay] = useState(true);
+
+  const { pageState, handleCallSend, setMessage, message } =
+    useContext(CallingContext);
 
   useEffect(() => {
     setTimeout(() => {
       setDisplay(false);
     }, 3000);
   }, []);
+
   return (
     <Container>
       <Text fontSize={20} fontWeight="bold">
@@ -89,7 +94,7 @@ const Call = ({ send, setSend, message, setMessage }) => {
         BMW X5 차주
       </Text>
       <Image src={callingImage} />
-      <CallButton onClick={() => setSend(true)}>
+      <CallButton onClick={() => handleCallSend()}>
         <Image src={phoneIcon} />
         {display && (
           <MessageBox>
@@ -119,8 +124,8 @@ const Call = ({ send, setSend, message, setMessage }) => {
           메시지 보내기
         </Text>
       </MessageButton>
-      {message && <MessageModal setMessage={setMessage} />}
-      {send && <Send setSend={setSend} />}
+      {message && <MessageModal />}
+      {pageState === "calling" && <Calling />}
     </Container>
   );
 };

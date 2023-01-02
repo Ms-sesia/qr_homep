@@ -1,7 +1,7 @@
 import React from "react";
 import styled from "styled-components";
-import colors from "../styles/colors";
-import appLogo from "../assets/icons/appLogo.svg";
+import colors from "../../styles/colors";
+import appLogo from "../../assets/icons/appLogo.svg";
 
 const Wrapper = styled.div`
   height: 848px;
@@ -74,26 +74,30 @@ const LineButton = styled.div`
 `;
 
 const Bottom = ({ calcWidth = 1000 }) => {
-    return (
-        <Wrapper>
-            <AppLogo>
-                <Image src={appLogo} />
-            </AppLogo>
-            <Text>
-                안심 주차 번호판 <br />
-                시큐릿
-            </Text>
-            {calcWidth > 760 && (
-                <AppDownload>
-                    <LineButton
-                        onClick={() => window.open("https://play.google.com/store/search?q=%EC%9E%B0%EB%8B%A4&c=apps")}
-                    >
-                        앱 시작하기
-                    </LineButton>
-                </AppDownload>
-            )}
-        </Wrapper>
-    )
-}
+  return (
+    <Wrapper>
+      <AppLogo>
+        <Image src={appLogo} />
+      </AppLogo>
+      <Text>
+        안심 주차 번호판 <br />
+        시큐릿
+      </Text>
+      {calcWidth > 760 && (
+        <AppDownload>
+          <LineButton
+            onClick={() =>
+              window.open(
+                "https://play.google.com/store/search?q=%EC%9E%B0%EB%8B%A4&c=apps"
+              )
+            }
+          >
+            앱 시작하기
+          </LineButton>
+        </AppDownload>
+      )}
+    </Wrapper>
+  );
+};
 
 export default React.memo(Bottom);

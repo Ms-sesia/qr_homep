@@ -1,8 +1,9 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext } from "react";
 import styled, { css } from "styled-components";
 import colors from "../../styles/colors";
 import callingImage from "../../assets/callingImage/callingImage.svg";
 import phoneIcon from "../../assets/callingImage/phoneIcon.svg";
+import { CallingContext } from "../../pages/Calling/CallingContainer";
 
 const Container = styled.div`
   width: 100%;
@@ -52,6 +53,8 @@ const CallButton = styled.div`
 `;
 
 const CallLoading = () => {
+  const { handleCallEnd } = useContext(CallingContext);
+
   return (
     <Container>
       <Text fontSize={20} fontWeight="bold" margin="0 0 15px 0">
@@ -63,7 +66,7 @@ const CallLoading = () => {
       </Text>
 
       <Image src={callingImage} />
-      <CallButton onClick={() => {}}>
+      <CallButton onClick={() => handleCallEnd()}>
         <Image src={phoneIcon} ROTATE />
       </CallButton>
     </Container>

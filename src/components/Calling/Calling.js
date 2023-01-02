@@ -1,8 +1,9 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import styled, { css } from "styled-components";
 import colors from "../../styles/colors";
 import callingImage from "../../assets/callingImage/callingImage.svg";
 import phoneIcon from "../../assets/callingImage/phoneIcon.svg";
+import { CallingContext } from "../../pages/Calling/CallingContainer";
 
 const Container = styled.div`
   width: 100%;
@@ -51,18 +52,12 @@ const CallButton = styled.div`
   cursor: pointer;
 `;
 
-const Audio = styled.audio`
-  width: 0;
-  height: 0;
-  position: fixed;
-  top: -1000px;
-  left: -1000px;
-`;
-
-const Calling = ({ setSend }) => {
+const Calling = () => {
   const [hours, setHours] = useState(0);
   const [minutes, setMinutes] = useState(0);
   const [seconds, setSeconds] = useState(0);
+
+  const { handleCallEnd } = useContext(CallingContext);
 
   useEffect(() => {
     const time = setTimeout(() => {
@@ -97,7 +92,7 @@ const Calling = ({ setSend }) => {
       <Text fontSize={14} margin="15px 0 0 85px" CURSOR>
         앱 보러가기
       </Text>
-      <CallButton onClick={() => setSend(false)}>
+      <CallButton onClick={() => handleCallEnd()}>
         <Image src={phoneIcon} ROTATE />
       </CallButton>
     </Container>

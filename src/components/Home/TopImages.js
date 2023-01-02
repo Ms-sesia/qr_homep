@@ -1,13 +1,13 @@
 import React from "react";
-import styled, {keyframes} from "styled-components";
-import logoImage from "../assets/icons/logo.svg";
-import appLogo from "../assets/icons/appLogo.svg";
-import mainImages from "../assets/mainImages/mainImages.png";
-import image1 from "../assets/mainImages/image1.png";
-import image2 from "../assets/mainImages/image2.png";
-import image3 from "../assets/mainImages/image3.png";
-import image4 from "../assets/mainImages/image4.png";
-import image5 from "../assets/mainImages/image5.png";
+import styled, { keyframes } from "styled-components";
+import logoImage from "../../assets/icons/logo.svg";
+import appLogo from "../../assets/icons/appLogo.svg";
+import mainImages from "../../assets/mainImages/mainImages.png";
+// import image1 from "../../assets/mainImages/image1.png";
+// import image2 from "../../assets/mainImages/image2.png";
+// import image3 from "../../assets/mainImages/image3.png";
+// import image4 from "../../assets/mainImages/image4.png";
+// import image5 from "../../assets/mainImages/image5.png";
 
 const TextAnimation = keyframes`
   0% {
@@ -60,7 +60,7 @@ const Logo = styled.div`
   margin: 0 auto 28px;
   background: url(${logoImage}) no-repeat;
   background-size: 100% 100%;
-  animation: ${TextAnimation} .8s;
+  animation: ${TextAnimation} 0.8s;
 
   @media only screen and (max-width: 768px) {
     width: 140px;
@@ -70,7 +70,7 @@ const Logo = styled.div`
 const Text = styled.span`
   font-size: 42px;
   font-weight: 600;
-  margin: ${({margin}) => margin ? margin : 0};
+  margin: ${({ margin }) => (margin ? margin : 0)};
 
   @media only screen and (max-width: 768px) {
     font-size: 32px;
@@ -114,31 +114,31 @@ const Description = styled.div`
 `;
 
 const TopImages = () => {
-    return (
-        <Wrapper>
-            <TitleBox>
-                <Logo/>
-                <Title>안심 주차 번호판, 시큐릿</Title>
-            </TitleBox>
+  return (
+    <Wrapper>
+      <TitleBox>
+        <Logo />
+        <Title>안심 주차 번호판, 시큐릿</Title>
+      </TitleBox>
 
-            <ImageBox>
-                <Image src={mainImages}/>
-            </ImageBox>
+      <ImageBox>
+        <Image src={mainImages} />
+      </ImageBox>
 
-            <AppLogo>
-                <LogoImage src={appLogo}/>
-            </AppLogo>
-            <Description>
-                <Text>간편한 QR코드로</Text>
-                <Text>전화번호를 노출하지 않고</Text>
-                <Text>나에게 연락 할 수 있는,</Text>
-                <Text margin="40px 0 0">하나의 QR카드로</Text>
-                <Text>여럿이서 사용 가능한,</Text>
-                <Text>나의 소중한 정보를 지켜주는</Text>
-                <Text margin="40px 0 0">안심 전화 솔루션!</Text>
-            </Description>
-        </Wrapper>
-    )
-}
+      <AppLogo>
+        <LogoImage src={appLogo} />
+      </AppLogo>
+      <Description>
+        <Text>간편한 QR코드로</Text>
+        <Text>전화번호를 노출하지 않고</Text>
+        <Text>나에게 연락 할 수 있는,</Text>
+        <Text margin="40px 0 0">하나의 QR카드로</Text>
+        <Text>여럿이서 사용 가능한,</Text>
+        <Text>나의 소중한 정보를 지켜주는</Text>
+        <Text margin="40px 0 0">안심 전화 솔루션!</Text>
+      </Description>
+    </Wrapper>
+  );
+};
 
 export default React.memo(TopImages);

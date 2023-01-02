@@ -2,9 +2,9 @@ import React, { useEffect, useState } from "react";
 import styled, { keyframes } from "styled-components";
 import colors from "../../styles/colors";
 import logoStyleText from "../../assets/icons/logoStyleText.svg";
-import Header from "../../components/Header";
-import TopImages from "../../components/TopImages";
-import SlideContent from "../../components/SlideContent";
+import Header from "../../components/Home/Header";
+import TopImages from "../../components/Home/TopImages";
+import SlideContent from "../../components/Home/SlideContent";
 // import ScrollToTop from "./components/layout/ScrollToTop";
 // SlideImages
 import slideImg1_1 from "../../assets/slideImages/slideImg1_1.png";
@@ -27,8 +27,8 @@ import slideImg4_3 from "../../assets/slideImages/slideImg4_3.png";
 import slideImg5_1 from "../../assets/slideImages/slideImg5_1.png";
 import slideImg5_2 from "../../assets/slideImages/slideImg5_2.png";
 import slideImg5_3 from "../../assets/slideImages/slideImg5_3.png";
-import Bottom from "../../components/Bottom";
-import Footer from "../../components/Footer";
+import Bottom from "../../components/Home/Bottom";
+import Footer from "../../components/Home/Footer";
 
 const logoBoxAnimation = keyframes`
   0% {
