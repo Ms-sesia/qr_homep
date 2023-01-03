@@ -66,7 +66,7 @@ const CallingContainer = () => {
   // 전화 걸기
   const handleCallSend = async () => {
     setPageState("callLoading");
-    socket.emit("sendCall", roomName);
+    socket.emit("sendCall", myId);
     console.log("전화 걺");
   };
 
