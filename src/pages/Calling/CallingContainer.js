@@ -1,6 +1,9 @@
 import React, { useEffect, useRef, useState, createContext } from "react";
 import CallingPresenter from "./CallingPresenter";
 import io from "socket.io-client";
+import { useQuery, useSubscription } from "@apollo/client";
+import { SEND_CALL_NOTI } from "../../graphql/calling/subscription";
+import { GET_RECEIVER_INFO } from "../../graphql/calling/query";
 
 export const CallingContext = createContext();
 
@@ -15,9 +18,39 @@ const CallingContainer = () => {
   const [roomName, setRoomName] = useState("abc");
   const myAudio = useRef();
   const peerAudio = useRef();
+  const userId = 4;
 
-  //TODO:: 배포된 서버로 바꾸기
-  const socket = io("http://localhost:8080", {
+  const randomStr = Math.random().toString(36).substring(2, 12);
+
+  const {
+    data: receiverData,
+    loading: receiverLoading,
+    refetch: receiverRefetch,
+  } = useQuery(GET_RECEIVER_INFO, {
+    variables: {
+      qrSerial: randomStr,
+    },
+  });
+
+  const {
+    data: subData,
+    loading: subLoading,
+    error: subError,
+  } = useSubscription(SEND_CALL_NOTI, {
+    variables: {
+      user_id: userId,
+    },
+  });
+
+  useEffect(() => {
+    console.log("receiverData::::::", receiverData);
+  }, [receiverData]);
+
+  useEffect(() => {
+    console.log("subData::::::", subData);
+  }, [subData]);
+
+  const socket = io("https://testvoicesev.platcube.com", {
     cors: {
       origin: "*",
       credentials: true,
@@ -60,7 +93,7 @@ const CallingContainer = () => {
   const initCall = async () => {
     await getMedia();
     makeConnection();
-    console.log("연결됨");
+    // console.log("연결됨");
   };
 
   // 전화 걸기
