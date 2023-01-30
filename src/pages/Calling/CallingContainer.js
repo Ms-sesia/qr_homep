@@ -185,17 +185,17 @@ const CallingContainer = () => {
     <CallingContext.Provider
       value={
         {
-          // message,
-          // setMessage,
-          // call,
-          // setCall,
-          // myAudio,
-          // peerAudio,
-          // pageState,
-          // setPageState,
-          // handleCallSend,
-          // handleCallEnd,
-          // handleCallReceive,
+          message,
+          setMessage,
+          call,
+          setCall,
+          myAudio,
+          peerAudio,
+          pageState,
+          setPageState,
+          handleCallSend,
+          handleCallEnd,
+          handleCallReceive,
         }
       }
     >
