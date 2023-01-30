@@ -11,7 +11,7 @@ const httpLink = new HttpLink({
 
 const wsLink = new GraphQLWsLink(
   createClient({
-    url: "wss://testvoicesev.platcube.com/graphgl",
+    url: "ws://testvoicesev.platcube.com/graphgl",
   })
 );
 
