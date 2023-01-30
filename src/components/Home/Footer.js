@@ -1,6 +1,6 @@
 import React from "react";
 import styled from "styled-components";
-import colors from "../styles/colors";
+import colors from "../../styles/colors";
 
 const Wrapper = styled.div`
   width: 100%;
@@ -31,16 +31,14 @@ const GrayText = styled.span`
 `;
 
 const Footer = () => {
-    return (
-        <Wrapper>
-            <BoldText>주식회사 방쿡</BoldText>
-            <MediumText>이용약관</MediumText>
-            <MediumText>개인정보처리방침</MediumText>
-            <GrayText>
-                © BangCook Corp. All rights reserved.
-            </GrayText>
-        </Wrapper>
-    )
-}
+  return (
+    <Wrapper>
+      <BoldText>주식회사 방쿡</BoldText>
+      <MediumText>이용약관</MediumText>
+      <MediumText>개인정보처리방침</MediumText>
+      <GrayText>© BangCook Corp. All rights reserved.</GrayText>
+    </Wrapper>
+  );
+};
 
 export default React.memo(Footer);
