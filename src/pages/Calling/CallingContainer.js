@@ -8,20 +8,19 @@ import { GET_RECEIVER_INFO } from "../../graphql/calling/query";
 export const CallingContext = createContext();
 
 const CallingContainer = () => {
-  const [message, setMessage] = useState(false);
-  const [send, setSend] = useState(false);
-  const [call, setCall] = useState(false);
-  const [pageState, setPageState] = useState("main");
-  const [myId, setMyId] = useState("");
-  let myPeerConnection;
-  let myStream;
-  const [roomName, setRoomName] = useState("abc");
-  const myAudio = useRef();
-  const peerAudio = useRef();
+  const [message, setMessage] = useState(false); //메세지 모달
+  const [call, setCall] = useState(false); //전화 걸었을 때 true
+  const [pageState, setPageState] = useState("main"); //띄울 화면
+  const [myId, setMyId] = useState(""); // 내 소켓 아이디
+  let myPeerConnection; // 오디오 데이터가 담김
+  let myStream; // 내 마이크
+  const [roomName, setRoomName] = useState("abc"); // 방 이름
+  const [randomStr, setRandomStr] = useState(); // 나의 랜덤 subscription id
+  const myAudio = useRef(); // 내 마이크
+  const peerAudio = useRef(); // 상대방 마이크
   const userId = 4;
 
-  const randomStr = Math.random().toString(36).substring(2, 12);
-
+  // 상대방 정보 가져오기
   const {
     data: receiverData,
     loading: receiverLoading,
@@ -32,6 +31,7 @@ const CallingContainer = () => {
     },
   });
 
+  // subscription 연결
   const {
     data: subData,
     loading: subLoading,
@@ -43,13 +43,22 @@ const CallingContainer = () => {
   });
 
   useEffect(() => {
+    // 내 subscription id 랜덤 생성
+    setRandomStr(Math.random().toString(36).substring(2, 12));
+  }, []);
+
+  useEffect(() => {
     console.log("receiverData::::::", receiverData);
+    if (subError) {
+      console.log("subError>>>>", subError);
+    }
   }, [receiverData]);
 
   useEffect(() => {
     console.log("subData::::::", subData);
   }, [subData]);
 
+  // 소켓 생성
   const socket = io("https://testvoicesev.platcube.com", {
     cors: {
       origin: "*",
@@ -57,19 +66,25 @@ const CallingContainer = () => {
     },
   });
 
+  // 내 스트림 가져오기 (오디오만)
   const getMedia = async () => {
     try {
-      myStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      myStream = await navigator.mediaDevices.getUserMedia({ audio: true }); //내 오디오 세팅
     } catch (e) {
       console.log(e);
     }
   };
 
+  //
   const makeConnection = async () => {
-    myPeerConnection = new RTCPeerConnection();
+    myPeerConnection = new RTCPeerConnection(); //나(peer)와 원격의 상대방(peer)과의 연결 만들기
+
+    // 인터넷 연결 생성 (Internet Connectivity Establishment)
+    // 이 연결을 해줘야 브라우저끼리 소통이 가능
+    // peer에서 ice 이벤트를 보냄
     myPeerConnection.addEventListener("icecandidate", handleIce);
-    socket.emit("join_room", roomName);
-    myPeerConnection.addEventListener("addstream", handleAddStream);
+    socket.emit("join_room", roomName); //룸 입장 -> 서버에서 welcome 에밋 보내줌 (144번째줄)
+    myPeerConnection.addEventListener("addstream", handleAddStream); //아래 코드와 같은데 addstream은 이제 사용되지 않음 그래도 일단 코드는 넣어 놓고
     myPeerConnection.addEventListener("track", handleTrack);
     myStream.getTracks().forEach((track) => {
       myPeerConnection.addTrack(track, myStream);
@@ -77,7 +92,9 @@ const CallingContainer = () => {
   };
 
   const handleIce = (data) => {
+    // 이벤트 감지 됐을 때 에밋 보냄
     socket.emit("ice", data.candidate, roomName);
+    // 상대방이 ice에밋 받으면 나한테도 ice에밋 보냄 (161번째줄)
   };
 
   const handleAddStream = (data) => {
@@ -86,13 +103,13 @@ const CallingContainer = () => {
   };
 
   const handleTrack = (data) => {
-    peerAudio.current.srcObject = data.streams[0];
-    peerAudio.current.pause();
+    peerAudio.current.srcObject = data.streams[0]; //상대방 오디오 데이터가 넘어옴
+    peerAudio.current.pause(); //일단 소리 끔
   };
 
   const initCall = async () => {
-    await getMedia();
-    makeConnection();
+    await getMedia(); // 내 마이크 가져오기
+    makeConnection(); // socket.io 연결시 필수 코드
     // console.log("연결됨");
   };
 
@@ -124,8 +141,9 @@ const CallingContainer = () => {
     });
 
     socket.on("welcome", async () => {
-      const offer = await myPeerConnection.createOffer();
-      myPeerConnection.setLocalDescription(offer);
+      const offer = await myPeerConnection.createOffer(); //WebRTC 연결 시작
+      console.log("offer", offer);
+      myPeerConnection.setLocalDescription(offer); //연결에 관련된 설명
       socket.emit("offer", offer, roomName);
     });
 
@@ -168,8 +186,7 @@ const CallingContainer = () => {
       value={{
         message,
         setMessage,
-        send,
-        setSend,
+
         call,
         setCall,
         myAudio,

@@ -1,18 +1,19 @@
 import { ApolloClient, InMemoryCache } from "@apollo/client";
 import { ApolloProvider, HttpLink, split } from "@apollo/client";
 import { getMainDefinition } from "@apollo/client/utilities";
-import { WebSocketLink } from "apollo-link-ws";
+// import { WebSocketLink } from "apollo-link-ws";
+import { createClient } from "graphql-ws";
+import { GraphQLWsLink } from "@apollo/client/link/subscriptions";
 
 const httpLink = new HttpLink({
-  uri: "http://localhost:12000/graphql",
+  uri: "https://testvoicesev.platcube.com/graphql",
 });
 
-const wsLink = new WebSocketLink({
-  uri: "ws://localhost:12000/graphql",
-  options: {
-    reconnect: true,
-  },
-});
+const wsLink = new GraphQLWsLink(
+  createClient({
+    url: "wss://testvoicesev.platcube.com/graphgl",
+  })
+);
 
 const splitLink = split(
   ({ query }) => {
