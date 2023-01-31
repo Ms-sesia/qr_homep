@@ -1,7 +1,6 @@
 import { ApolloClient, InMemoryCache } from "@apollo/client";
-import { ApolloProvider, HttpLink, split } from "@apollo/client";
+import { HttpLink, split } from "@apollo/client";
 import { getMainDefinition } from "@apollo/client/utilities";
-// import { WebSocketLink } from "apollo-link-ws";
 import { createClient } from "graphql-ws";
 import { GraphQLWsLink } from "@apollo/client/link/subscriptions";
 
@@ -11,7 +10,7 @@ const httpLink = new HttpLink({
 
 const wsLink = new GraphQLWsLink(
   createClient({
-    url: "ws://testvoicesev.platcube.com/graphgl",
+    url: "wss://testvoicesev.platcube.com/graphql",
   })
 );
 

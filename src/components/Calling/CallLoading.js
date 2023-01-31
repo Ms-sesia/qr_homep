@@ -1,9 +1,11 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect } from "react";
 import styled, { css } from "styled-components";
 import colors from "../../styles/colors";
 import callingImage from "../../assets/callingImage/callingImage.svg";
 import phoneIcon from "../../assets/callingImage/phoneIcon.svg";
 import { CallingContext } from "../../pages/Calling/CallingContainer";
+import { SEND_CALL_NOTI } from "../../graphql/calling/subscription";
+import { useSubscription } from "@apollo/client";
 
 const Container = styled.div`
   width: 100%;
@@ -53,7 +55,27 @@ const CallButton = styled.div`
 `;
 
 const CallLoading = () => {
-  const { handleCallEnd } = useContext(CallingContext);
+  const { userId, handleCallEnd } = useContext(CallingContext);
+
+  // subscription 연결
+  const {
+    data: subData,
+    loading: subLoading,
+    error: subError,
+  } = useSubscription(SEND_CALL_NOTI, {
+    variables: {
+      userId: userId,
+    },
+  });
+
+  useEffect(() => {
+    console.log("subData::::::", subData, userId);
+    if (subData?.sendCallNoti) {
+    }
+    if (subError) {
+      console.log("subError>>>", subError);
+    }
+  }, [subData]);
 
   return (
     <Container>

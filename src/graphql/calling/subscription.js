@@ -1,11 +1,12 @@
 import gql from "graphql-tag";
 
 export const SEND_CALL_NOTI = gql`
-  subscription sendCallNoti($userId: Int) {
+  subscription SendCallNoti($userId: Int) {
     sendCallNoti(user_id: $userId) {
-      msg
+      receiverId
       receiveUrl
-      user_id
+      roomName
+      msg
     }
   }
 `;
