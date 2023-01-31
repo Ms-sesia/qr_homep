@@ -3,6 +3,7 @@ import styled, { css } from "styled-components";
 import colors from "../../styles/colors";
 import callingIcon from "../../assets/callingImage/callingIcon.png";
 import phoneIcon from "../../assets/callingImage/phoneIcon.svg";
+import Calling from "../../components/Receive/Calling";
 
 const View = styled.div`
   width: 100%;
@@ -100,11 +101,8 @@ const ReceivePresenter = ({
   handleCallReceive,
   myAudio,
   peerAudio,
+
   handleCallEnd,
-  hours,
-  minutes,
-  seconds,
-  TimeRecord,
 }) => {
   return (
     <>
@@ -124,7 +122,6 @@ const ReceivePresenter = ({
               <BottomHalfNavButton
                 onClick={() => {
                   handleCallReceive();
-                  TimeRecord();
                 }}
               >
                 받기
@@ -133,28 +130,7 @@ const ReceivePresenter = ({
             </BottonBox>
           </>
         ) : (
-          pageState === "calling" && (
-            <>
-              <BoldText>BMW X5 걸려온 전화</BoldText>
-              <Text margin="0 0 77px 0" fontSize={14}>
-                {hours !== 0 && `${hours} : `}
-                {hours !== 0
-                  ? minutes < 10
-                    ? `0${minutes}`
-                    : minutes
-                  : minutes}{" "}
-                : {seconds < 10 ? `0${seconds}` : seconds}
-              </Text>
-              <Text>
-                안심하세요,
-                <br />
-                상대방은 전화번호를 알 수 없습니다.
-              </Text>
-              <CallButton onClick={() => handleCallEnd()}>
-                <Image src={phoneIcon} ROTATE />
-              </CallButton>
-            </>
-          )
+          pageState === "calling" && <Calling handleCallEnd={handleCallEnd} />
         )}
       </View>
       <Audio ref={myAudio} autoPlay playsInline />
