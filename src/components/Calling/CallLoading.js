@@ -55,27 +55,7 @@ const CallButton = styled.div`
 `;
 
 const CallLoading = () => {
-  const { userId, handleCallEnd } = useContext(CallingContext);
-
-  // subscription 연결
-  const {
-    data: subData,
-    loading: subLoading,
-    error: subError,
-  } = useSubscription(SEND_CALL_NOTI, {
-    variables: {
-      userId: userId,
-    },
-  });
-
-  useEffect(() => {
-    console.log("subData::::::", subData, userId);
-    if (subData?.sendCallNoti) {
-    }
-    if (subError) {
-      console.log("subError>>>", subError);
-    }
-  }, [subData]);
+  const { handleCallEnd } = useContext(CallingContext);
 
   return (
     <Container>
