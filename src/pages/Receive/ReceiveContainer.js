@@ -1,4 +1,10 @@
-import React, { useEffect, useRef, useState, createContext } from "react";
+import React, {
+  useEffect,
+  useRef,
+  useState,
+  createContext,
+  useCallback,
+} from "react";
 import io from "socket.io-client";
 import ReceivePresenter from "./ReceivePresenter";
 
@@ -136,10 +142,39 @@ const ReceiveContainer = () => {
     });
   }, []);
 
+  // 전화 시작 후
+
+  const [hours, setHours] = useState(0);
+  const [minutes, setMinutes] = useState(0);
+  const [seconds, setSeconds] = useState(0);
+
+  const TimeRecord = useCallback(() => {
+    const time = setTimeout(() => {
+      if (seconds < 59) setSeconds(seconds + 1);
+      if (seconds === 59) {
+        setSeconds(0);
+        setMinutes(minutes + 1);
+      }
+      if (minutes === 59 && seconds === 59) {
+        setMinutes(0);
+        setHours(hours + 1);
+      }
+    }, 1000);
+
+    return () => clearTimeout(time);
+  }, [pageState, seconds, minutes, hours]);
+
   return (
     <ReceivePresenter
       pageState={pageState}
       handleCallReceive={handleCallReceive}
+      myAudio={myAudio}
+      peerAudio={peerAudio}
+      handleCallEnd={handleCallEnd}
+      hours={hours}
+      minutes={minutes}
+      seconds={seconds}
+      TimeRecord={TimeRecord}
     />
   );
 };

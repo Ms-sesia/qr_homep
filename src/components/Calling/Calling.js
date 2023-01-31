@@ -73,7 +73,7 @@ const Calling = () => {
     }, 1000);
 
     return () => clearTimeout(time);
-  }, [seconds, minutes]);
+  }, [seconds, minutes, hours]);
 
   return (
     <Container>
