@@ -90,25 +90,12 @@ const BottomHalfNavButton = styled.div`
   cursor: pointer;
 `;
 
-const Audio = styled.audio`
+const Audio = styled.video`
   width: 0;
   height: 0;
   position: fixed;
   top: -1000px;
   left: -1000px;
-`;
-
-const CallButton = styled.div`
-  width: 68px;
-  height: 68px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  position: relative;
-  margin-top: 88px;
-  border-radius: 50%;
-  background-color: ${colors.redColor};
-  cursor: pointer;
 `;
 
 const ReceivePresenter = ({

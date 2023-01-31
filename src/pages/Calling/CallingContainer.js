@@ -5,7 +5,7 @@ import { useQuery } from "@apollo/client";
 import { SEND_CALL_NOTI } from "../../graphql/calling/subscription";
 import { useSubscription } from "@apollo/client";
 import { GET_RECEIVER_INFO } from "../../graphql/calling/query";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 
 export const CallingContext = createContext();
 
@@ -26,6 +26,27 @@ const CallingContainer = () => {
   const navigate = useNavigate();
   const socket = useRef();
   // 상대방 정보 가져오기
+
+  // Edward
+  const location = useLocation();
+  const qrCode = useRef();
+
+  React.useEffect(() => {
+    let initialCode = location.pathname.split("/")[2];
+
+    if (initialCode) {
+      localStorage.setItem("qrCode", initialCode);
+      navigate("/calling");
+    }
+  }, [location]);
+  React.useEffect(() => {
+    if (localStorage.getItem("qrCode")) {
+      qrCode.current = localStorage.getItem("qrCode");
+    }
+  }, []);
+  React.useEffect(() => {
+    console.info("qrCode", qrCode);
+  }, [qrCode]);
 
   const {
     data: receiverData,
@@ -56,12 +77,12 @@ const CallingContainer = () => {
   useEffect(() => {
     if (receiverData?.getReceiverInfo?.result) {
       setUserId(receiverData.getReceiverInfo.user_id);
-      console.log("receiverData::::::", receiverData);
+      // console.log("receiverData::::::", receiverData);
     }
   }, [receiverData]);
 
   useEffect(() => {
-    console.log("subData::::::", subData, userId);
+    // console.log("subData::::::", subData, userId);
     if (subData?.sendCallNoti) {
     }
     if (subError) {
@@ -79,7 +100,7 @@ const CallingContainer = () => {
     });
   }, []);
 
-  useEffect(() => console.log("send socket>>>", socket), [socket]);
+  // useEffect(() => console.log("send socket>>>", socket), [socket]);
 
   // 내 스트림 가져오기 (오디오만)
   const getMedia = async () => {
@@ -99,7 +120,7 @@ const CallingContainer = () => {
     // peer에서 ice 이벤트를 보냄
     myPeerConnection.addEventListener("icecandidate", handleIce);
     socket.current.emit("join_room", roomName); //룸 입장 -> 서버에서 welcome 에밋 보내줌 (144번째줄)
-    console.log("roomName", roomName);
+    // console.log("roomName", roomName);
     myPeerConnection.addEventListener("addstream", handleAddStream); //아래 코드와 같은데 addstream은 이제 사용되지 않음 그래도 일단 코드는 넣어 놓고
     myPeerConnection.addEventListener("track", handleTrack);
     myStream.getTracks().forEach((track) => {
@@ -114,8 +135,8 @@ const CallingContainer = () => {
   };
 
   const handleAddStream = (data) => {
-    console.log("Peer's Stream : ", data.stream);
-    console.log("My Stream : ", myStream);
+    // console.log("Peer's Stream : ", data.stream);
+    // console.log("My Stream : ", myStream);
   };
 
   const handleTrack = (data) => {
@@ -137,7 +158,7 @@ const CallingContainer = () => {
       user_id: 4,
       qr_id: 147,
     });
-    console.log("전화 걺");
+    // console.log("전화 걺");
   };
 
   // 전화 종료
@@ -151,7 +172,7 @@ const CallingContainer = () => {
 
     socket.current.on("myId", (id) => {
       setMyId(id);
-      console.log("myId:", id);
+      // console.log("myId:", id);
     });
 
     socket.current.on("welcome", async () => {

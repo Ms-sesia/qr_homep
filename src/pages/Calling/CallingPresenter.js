@@ -42,6 +42,7 @@ const RowBox = styled.div`
 
 const Button = styled.div`
   width: 80vw;
+  max-width: 350px;
   height: 52px;
   flex-shrink: 0;
   display: flex;
@@ -56,7 +57,7 @@ const Button = styled.div`
   cursor: pointer;
 `;
 
-const Audio = styled.audio`
+const Audio = styled.video`
   width: 0;
   height: 0;
   position: fixed;

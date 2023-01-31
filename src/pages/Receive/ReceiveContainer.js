@@ -72,6 +72,7 @@ const ReceiveContainer = () => {
   };
 
   const handleTrack = (data) => {
+    console.log("handleTrack>>>", data);
     peerAudio.current.srcObject = data.streams[0]; //상대방 오디오 데이터가 넘어옴
     peerAudio.current.pause(); //일단 소리 끔
   };
@@ -93,6 +94,7 @@ const ReceiveContainer = () => {
     setPageState("calling");
     socket.current.emit("received", roomName);
     peerAudio.current.play();
+    myAudio.current.play();
   };
 
   useEffect(() => {
@@ -127,14 +129,13 @@ const ReceiveContainer = () => {
 
     // 전화가 왔을 경우
     socket.current.on("receiveCall", () => {
-      setPageState("receive");
       console.log("전화 옴");
     });
 
     // 전화 종료
     socket.current.on("close", () => {
       myPeerConnection.close();
-      navigate("/");
+      // navigate("/");
     });
   }, []);
 

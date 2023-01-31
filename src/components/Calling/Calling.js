@@ -89,9 +89,9 @@ const Calling = () => {
           : minutes} : {seconds < 10 ? `0${seconds}` : seconds}
       </Text>
       <Image src={callingImage} />
-      <Text fontSize={14} margin="15px 0 0 85px" CURSOR>
+      {/* <Text fontSize={14} margin="15px 0 0 85px" CURSOR>
         앱 보러가기
-      </Text>
+      </Text> */}
       <CallButton onClick={() => handleCallEnd()}>
         <Image src={phoneIcon} ROTATE />
       </CallButton>
