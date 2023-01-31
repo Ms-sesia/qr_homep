@@ -102,7 +102,7 @@ const CallingPresenter = () => {
         {/* 상대방으로부터 전화가 왔을 때 */}
         {pageState === "receive" && <Receive />}
 
-        {/* 전화 수신 중 화면 */}
+        {/* 전화 발신 중 중 화면 */}
         {pageState === "callLoading" && <CallLoading />}
       </Container>
       <Audio ref={myAudio} autoPlay playsInline />

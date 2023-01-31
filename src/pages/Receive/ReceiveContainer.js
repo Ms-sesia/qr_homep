@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState, createContext } from "react";
 import io from "socket.io-client";
+import ReceivePresenter from "./ReceivePresenter";
 
 const ReceiveContainer = () => {
   const [pageState, setPageState] = useState("main"); //띄울 화면
@@ -135,7 +136,12 @@ const ReceiveContainer = () => {
     });
   }, []);
 
-  return <div>ReceiveContainer</div>;
+  return (
+    <ReceivePresenter
+      pageState={pageState}
+      handleCallReceive={handleCallReceive}
+    />
+  );
 };
 
 export default ReceiveContainer;
