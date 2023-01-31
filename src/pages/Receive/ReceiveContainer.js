@@ -1,10 +1,5 @@
-import React, {
-  useEffect,
-  useRef,
-  useState,
-  createContext,
-  useCallback,
-} from "react";
+import React, { useEffect, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import io from "socket.io-client";
 import ReceivePresenter from "./ReceivePresenter";
 
@@ -19,7 +14,7 @@ const ReceiveContainer = () => {
   let myStream; // 내 마이크
   const myAudio = useRef(); // 내 마이크
   const peerAudio = useRef(); // 상대방 마이크
-
+  const navigate = useNavigate();
   const socket = useRef();
 
   useEffect(() => {
@@ -48,6 +43,7 @@ const ReceiveContainer = () => {
     }
   };
 
+  //
   const makeConnection = async () => {
     myPeerConnection = new RTCPeerConnection(); //나(peer)와 원격의 상대방(peer)과의 연결 만들기
 
@@ -88,8 +84,8 @@ const ReceiveContainer = () => {
 
   // 전화 종료
   const handleCallEnd = async () => {
-    setPageState("main");
     socket.current.emit("end", roomName);
+    navigate("/");
   };
 
   // 전화 받기
@@ -138,7 +134,7 @@ const ReceiveContainer = () => {
     // 전화 종료
     socket.current.on("close", () => {
       myPeerConnection.close();
-      setPageState("main");
+      navigate("/");
     });
   }, []);
 

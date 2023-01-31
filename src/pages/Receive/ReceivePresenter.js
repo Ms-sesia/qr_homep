@@ -1,9 +1,20 @@
 import React from "react";
-import styled, { css } from "styled-components";
+import styled, { css, keyframes } from "styled-components";
 import colors from "../../styles/colors";
 import callingIcon from "../../assets/callingImage/callingIcon.png";
-import phoneIcon from "../../assets/callingImage/phoneIcon.svg";
 import Calling from "../../components/Receive/Calling";
+
+const callingAnimation = keyframes`
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.6;
+  }
+  100% {
+    opacity: 1;
+  }
+`;
 
 const View = styled.div`
   width: 100%;
@@ -12,13 +23,12 @@ const View = styled.div`
   max-height: 844px;
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: space-around;
   align-items: center;
-  padding: 0 20px;
+  padding: 60px 20px 0 20px;
   margin: 0 auto;
   background-color: ${colors.whiteColor};
   position: relative;
-  border: 1px solid red;
 `;
 
 const TextBox = styled.div`
@@ -29,6 +39,12 @@ const TextBox = styled.div`
 `;
 
 const Image = styled.img`
+  ${({ operAni }) =>
+    operAni &&
+    css`
+      animation: ${callingAnimation} 3s infinite;
+    `}
+
   ${({ ROTATE }) =>
     ROTATE &&
     css`
@@ -50,9 +66,8 @@ const Text = styled.div`
 `;
 
 const BottonBox = styled.div`
-  position: absolute;
   width: 100%;
-  bottom: 0px;
+
   padding-bottom: 60px;
   display: flex;
   flex-direction: row;
@@ -117,7 +132,7 @@ const ReceivePresenter = ({
                 안심하세요, 전화번호는 노출되지않습니다
               </Text>
             </TextBox>
-            <Image src={callingIcon} />
+            <Image operAni src={callingIcon} />
             <BottonBox>
               <BottomHalfNavButton
                 onClick={() => {

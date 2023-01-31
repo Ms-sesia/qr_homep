@@ -18,6 +18,13 @@ const Text = styled.div`
   text-align: center;
 `;
 
+const TextBox = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+`;
+
 const CallButton = styled.div`
   width: 68px;
   height: 68px;
@@ -62,15 +69,18 @@ const Calling = ({ handleCallEnd }) => {
 
   return (
     <>
-      <BoldText>BMW X5 걸려온 전화</BoldText>
-      <Text margin="0 0 77px 0" fontSize={14}>
-        {hours !== 0 && `${hours} : `}
-        {hours !== 0
-          ? minutes < 10
-            ? `0${minutes}`
-            : minutes
-          : minutes} : {seconds < 10 ? `0${seconds}` : seconds}
-      </Text>
+      <TextBox>
+        <BoldText>BMW X5 걸려온 전화</BoldText>
+
+        <Text margin="0 0 77px 0" fontSize={14}>
+          {hours !== 0 && `${hours} : `}
+          {hours !== 0
+            ? minutes < 10
+              ? `0${minutes}`
+              : minutes
+            : minutes} : {seconds < 10 ? `0${seconds}` : seconds}
+        </Text>
+      </TextBox>
       <Text>
         안심하세요,
         <br />

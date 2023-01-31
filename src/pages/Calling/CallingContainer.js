@@ -5,6 +5,7 @@ import { useQuery } from "@apollo/client";
 import { SEND_CALL_NOTI } from "../../graphql/calling/subscription";
 import { useSubscription } from "@apollo/client";
 import { GET_RECEIVER_INFO } from "../../graphql/calling/query";
+import { useNavigate } from "react-router-dom";
 
 export const CallingContext = createContext();
 
@@ -22,6 +23,7 @@ const CallingContainer = () => {
   const myAudio = useRef(); // 내 마이크
   const peerAudio = useRef(); // 상대방 마이크
   const [userId, setUserId] = useState(null);
+  const navigate = useNavigate();
   const socket = useRef();
   // 상대방 정보 가져오기
 
@@ -172,6 +174,12 @@ const CallingContainer = () => {
 
     socket.current.on("ice", async (ice) => {
       myPeerConnection.addIceCandidate(ice);
+    });
+
+    // 전화가 왔을 경우
+    socket.current.on("receiveCall", () => {
+      navigate("/receive");
+      console.log("전화 옴");
     });
 
     // 내가 건 전화에 상대방이 받았을 경우
