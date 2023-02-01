@@ -46,9 +46,10 @@ const ReceiveContainer = () => {
   // 내 스트림 가져오기 (오디오만)
   const getMedia = async () => {
     try {
-      myStream = await navigator.mediaDevices.getUserMedia({ audio: true }); //내 오디오 세팅
-      myAudio.current.srcObject = myStream;
-      // myAudio.current.pause();
+      myStream = await navigator.mediaDevices.getUserMedia({
+        audio: true,
+        video: true,
+      }); //내 오디오 세팅
     } catch (e) {
       console.log(e);
     }
@@ -56,7 +57,19 @@ const ReceiveContainer = () => {
 
   //
   const makeConnection = async () => {
-    myPeerConnection = new RTCPeerConnection(); //나(peer)와 원격의 상대방(peer)과의 연결 만들기
+    myPeerConnection = new RTCPeerConnection({
+      iceServers: [
+        {
+          urls: [
+            "stun:stun.l.google.com:19302",
+            "stun:stun1.l.google.com:19302",
+            "stun:stun2.l.google.com:19302",
+            "stun:stun3.l.google.com:19302",
+            "stun:stun4.l.google.com:19302",
+          ],
+        },
+      ],
+    }); //나(peer)와 원격의 상대방(peer)과의 연결 만들기
 
     // 인터넷 연결 생성 (Internet Connectivity Establishment)
     // 이 연결을 해줘야 브라우저끼리 소통이 가능
@@ -99,7 +112,6 @@ const ReceiveContainer = () => {
   // 전화 종료
   const handleCallEnd = async () => {
     socket.current.emit("end", roomName);
-    // myAudio.current.pause(); //일단 소리 끔
     peerAudio.current.pause();
     // navigate("/");
   };
@@ -109,7 +121,6 @@ const ReceiveContainer = () => {
     setPageState("calling");
     socket.current.emit("received", roomName);
     peerAudio.current.play();
-    // myAudio.current.play();
   };
 
   useEffect(() => {
@@ -156,7 +167,6 @@ const ReceiveContainer = () => {
     // 전화 종료
     socket.current.on("close", () => {
       myPeerConnection.close();
-      // myAudio.current.pause(); //일단 소리 끔
       peerAudio.current.pause();
       // navigate("/");
     });

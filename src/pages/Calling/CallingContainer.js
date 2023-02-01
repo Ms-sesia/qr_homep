@@ -108,8 +108,6 @@ const CallingContainer = () => {
         credentials: true,
       },
     });
-    // myAudio.current.pause(); //일단 소리 끔
-    // peerAudio.current.pause();
   }, []);
 
   useEffect(() => {
@@ -134,11 +132,9 @@ const CallingContainer = () => {
       // console.log("device list =>>", devices);
 
       myStream = await navigator.mediaDevices.getUserMedia({
-        // video: true,
+        video: true,
         audio: true,
       }); //내 오디오 세팅
-      myAudio.current.srcObject = myStream;
-      // myAudio.current.pause();
     } catch (e) {
       console.log(e);
     }
@@ -185,6 +181,7 @@ const CallingContainer = () => {
   const handleAddStream = (data) => {
     console.log("Peer's Stream : ", data.stream);
     console.log("My Stream : ", myStream);
+    // peerAudio.current.type = "screen";
     peerAudio.current.srcObject = data.streams; //상대방 오디오 데이터가 넘어옴
     peerAudio.current.pause();
   };
@@ -214,7 +211,6 @@ const CallingContainer = () => {
   const handleCallEnd = async () => {
     setPageState("main");
     socket.current.emit("end", roomName);
-    myAudio.current.pause(); //일단 소리 끔
     peerAudio.current.pause();
     // navigate("/");
   };
@@ -262,13 +258,11 @@ const CallingContainer = () => {
     socket.current.on("received", () => {
       setPageState("calling");
       peerAudio.current.play();
-      // myAudio.current.play();
     });
 
     // 전화 종료
     socket.current.on("close", () => {
       myPeerConnection.close();
-      // myAudio.current.pause(); //일단 소리 끔
       peerAudio.current.pause();
       setPageState("main");
     });
