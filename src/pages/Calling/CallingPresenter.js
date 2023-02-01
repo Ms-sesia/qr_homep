@@ -117,7 +117,7 @@ const CallingPresenter = () => {
         {/* 전화 발신 중 중 화면 */}
         {pageState === "callLoading" && <CallLoading />}
       </Container>
-      <Audio ref={myAudio} autoPlay playsInline />
+      {/* <Audio ref={myAudio} autoPlay playsInline /> */}
       <Audio ref={peerAudio} autoPlay playsInline />
     </>
   );
