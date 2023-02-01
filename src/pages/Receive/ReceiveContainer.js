@@ -114,6 +114,7 @@ const ReceiveContainer = () => {
     socket.current.emit("end", roomName);
     peerAudio.current.pause();
     // navigate("/");
+    setPageState("main");
   };
 
   // 전화 받기
@@ -131,34 +132,36 @@ const ReceiveContainer = () => {
       // console.log("myId:", id);
     });
 
-    socket.current.on("welcome", async () => {
-      const offer = await myPeerConnection.createOffer(); //WebRTC 연결 시작
-      // console.log("offer", offer);
-      myPeerConnection.setLocalDescription(offer); //연결에 관련된 내용
-      socket.current.emit("offer", offer, roomName); // offer 에밋 보내면 서버에서 offer 다시 보냄 방에 있는 사람들 WebRTC 연결 다 됨
-    });
+    // socket.current.on("welcome", async () => {
+    //   const offer = await myPeerConnection.createOffer(); //WebRTC 연결 시작
+    //   console.log("offer", offer);
+    //   myPeerConnection.setLocalDescription(offer); //연결에 관련된 내용
+    //   socket.current.emit("offer", offer, roomName); // offer 에밋 보내면 서버에서 offer 다시 보냄 방에 있는 사람들 WebRTC 연결 다 됨
+    // });
 
+    // 수신단만 사용. A에서 만든 오퍼 수령 및 내 오퍼도 전달
     socket.current.on("offer", async (offer) => {
-      myPeerConnection.setRemoteDescription(offer);
-      const answer = await myPeerConnection.createAnswer();
+      console.log("offer:", offer);
+      myPeerConnection.setRemoteDescription(offer); // 다른 peer의 위치를 myPeerConnection에 연결해주는 과정
+      const answer = await myPeerConnection.createAnswer(); //잘 받았음을 확인하기 위해 Answer 만듦
       myPeerConnection.setLocalDescription(answer); //현재 peer에서 생성한 answer을 myPeerConnection의 LocalDescription으로 등록
       socket.current.emit("answer", answer, roomName); //에밋 보내면 상대방도 answer 에밋 받음
     });
 
-    socket.current.on("answer", (answer) => {
-      myPeerConnection.setRemoteDescription(answer); //상대방 연결 내용 저장
-    });
+    // socket.current.on("answer", (answer) => {
+    //   myPeerConnection.setRemoteDescription(answer); //상대방 연결 내용 저장
+    // });
 
-    socket.current.on("ice", (ice) => {
+    socket.current.on("ice", async (ice) => {
       myPeerConnection.addIceCandidate(ice);
     });
 
-    // 수신자 접속 확인
-    socket.current.on("receiverJoin", () => {
-      handleCallReceive();
-      // // 전화 연결
-      socket.current.emit("received");
-    });
+    // // 수신자 접속 확인
+    // socket.current.on("receiverJoin", () => {
+    //   handleCallReceive();
+    //   // // 전화 연결
+    //   // socket.current.emit("received");
+    // });
     // 전화가 왔을 경우
     socket.current.on("receiveCall", () => {
       console.log("전화 옴");
@@ -167,8 +170,7 @@ const ReceiveContainer = () => {
     // 전화 종료
     socket.current.on("close", () => {
       myPeerConnection.close();
-      peerAudio.current.pause();
-      // navigate("/");
+      navigate("/");
     });
   }, []);
 

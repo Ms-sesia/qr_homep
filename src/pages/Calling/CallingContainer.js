@@ -224,23 +224,32 @@ const CallingContainer = () => {
       setMyId(id);
       // console.log("myId:", id);
     });
+    // socket.current.on("welcome", async (id) => {
+    //   console.log("welcome!!");
+    //   const offer = await myPeerConnection.createOffer(); //WebRTC 연결 시작
+    //   myPeerConnection.setLocalDescription(offer); //연결에 관련된 내용
+    //   socket.current.emit("offer", offer, roomName); // offer 에밋 보내면 서버에서 offer 다시 보냄 방에 있는 사람들 WebRTC 연결 다 됨
+    // });
 
-    socket.current.on("welcome", async (id) => {
-      console.log("myId :", id);
+    // // socket.current.on("offer", async (offer) => {
+    // //   myPeerConnection.setRemoteDescription(offer); // 다른 peer의 위치를 myPeerConnection에 연결해주는 과정
+    // //   const answer = await myPeerConnection.createAnswer(); //잘 받았음을 확인하기 위해 Answer 만듦
+    // //   myPeerConnection.setLocalDescription(answer); //현재 peer에서 생성한 answer을 myPeerConnection의 LocalDescription으로 등록
+    // //   socket.current.emit("answer", answer, roomName); //에밋 보내면 상대방도 answer 에밋 받음
+    // // });
+
+    // 수신자 접속 확인 후 offer생성하여 전달
+    socket.current.on("receiverJoin", async () => {
+      // handleCallReceive();
       const offer = await myPeerConnection.createOffer(); //WebRTC 연결 시작
-      // console.log("offer", offer);
+      console.log("발신단 offer 생성!!", offer);
       myPeerConnection.setLocalDescription(offer); //연결에 관련된 내용
       socket.current.emit("offer", offer, roomName); // offer 에밋 보내면 서버에서 offer 다시 보냄 방에 있는 사람들 WebRTC 연결 다 됨
     });
 
-    socket.current.on("offer", async (offer) => {
-      myPeerConnection.setRemoteDescription(offer); // 다른 peer의 위치를 myPeerConnection에 연결해주는 과정
-      const answer = await myPeerConnection.createAnswer(); //잘 받았음을 확인하기 위해 Answer 만듦
-      myPeerConnection.setLocalDescription(answer); //현재 peer에서 생성한 answer을 myPeerConnection의 LocalDescription으로 등록
-      socket.current.emit("answer", answer, roomName); //에밋 보내면 상대방도 answer 에밋 받음
-    });
-
+    // 발신자가 수신자의 offer담긴것을 확인하고 받아서 내용 저장
     socket.current.on("answer", (answer) => {
+      console.log("answer!!");
       myPeerConnection.setRemoteDescription(answer); //상대방 연결 내용 저장
     });
 
@@ -248,30 +257,45 @@ const CallingContainer = () => {
       myPeerConnection.addIceCandidate(ice);
     });
 
-    // 전화가 왔을 경우
-    socket.current.on("receiveCall", () => {
-      navigate("/receive");
-      console.log("전화 옴");
-    });
+    // // 전화가 왔을 경우
+    // socket.current.on("receiveCall", () => {
+    //   navigate("/receive");
+    //   console.log("전화 옴");
+    // });
 
     // 내가 건 전화에 상대방이 받았을 경우
     socket.current.on("received", () => {
       setPageState("calling");
       peerAudio.current.play();
+      console.log("전화 받음");
     });
 
     // 전화 종료
-    socket.current.on("close", () => {
-      myPeerConnection.close();
-      peerAudio.current.pause();
+    socket.current.on("close", async () => {
       setPageState("main");
+      myPeerConnection.close();
+      // try {
+      //   console.log("수신자 정보:", qrId, userId);
+      //   const { data } = await callEnd({
+      //     variables: {
+      //       chCreatedAt: new Date(),
+      //       callTime: 12,
+      //       receiverId: userId,
+      //       qrId: qrId,
+      //     },
+      //   });
+      //   console.log("data>>>", data);
+      //   // navigate("/");
+      // } catch (e) {
+      //   console.log(e);
+      // }
     });
+
     // 더이상 방에 입장 불가
     socket.current.on("cannotJoinRoom", (msg) => {
-      // console.log(msg);
+      console.log(msg);
     });
   }, []);
-
   return (
     <CallingContext.Provider
       value={{
