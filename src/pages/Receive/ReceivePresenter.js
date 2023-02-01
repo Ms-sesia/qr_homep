@@ -136,7 +136,7 @@ const ReceivePresenter = ({
           pageState === "calling" && <Calling handleCallEnd={handleCallEnd} />
         )}
       </View>
-      {/* <Audio ref={myAudio} autoPlay playsInline /> */}
+      <Audio ref={myAudio} autoPlay playsInline />
       <Audio ref={peerAudio} autoPlay playsInline />
     </>
   );
