@@ -18,11 +18,10 @@ const Container = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
+  justify-content: space-around;
   position: relative;
-  padding: 0 20px;
+  padding: 60px 20px 0 20px;
   margin: auto;
-  /* border: 1px solid red; */
 `;
 
 const Text = styled.div`
@@ -39,11 +38,11 @@ const RowBox = styled.div`
   width: 100%;
   display: flex;
   align-items: center;
-  margin-bottom: 62px;
 `;
 
 const Button = styled.div`
-  width: 100%;
+  width: 80vw;
+  max-width: 350px;
   height: 52px;
   flex-shrink: 0;
   display: flex;
@@ -58,12 +57,17 @@ const Button = styled.div`
   cursor: pointer;
 `;
 
-const Audio = styled.audio`
+const Audio = styled.video`
   width: 0;
   height: 0;
   position: fixed;
   top: -1000px;
   left: -1000px;
+`;
+
+const ColumnBox = styled.div`
+  display: flex;
+  flex-direction: column;
 `;
 
 const CallingPresenter = () => {
@@ -78,17 +82,20 @@ const CallingPresenter = () => {
             번호가 보이지 않는 QR 카드 <br /> 안심 전화 솔루션, 시크릿
           </Text>
         </RowBox>
-        <Image src={callingImage} />
-        <Text fontSize={14} margin="15px 0 66px 85px" CURSOR>
-          <a target="_blank" href="https://www.google.com">
-            앱 보러가기
-          </a>
-        </Text>
-        <Button BG onClick={() => setPageState("call")}>
-          전화하기
-        </Button>
-        <Button onClick={() => setMessage(true)}>메세지 보내기</Button>
-
+        <ColumnBox>
+          <Image src={callingImage} />
+          <Text fontSize={14} CURSOR margin="10px 0 0 auto">
+            <a target="_blank" href="https://www.google.com">
+              앱 보러가기
+            </a>
+          </Text>
+        </ColumnBox>
+        <ColumnBox>
+          <Button BG onClick={() => setPageState("call")}>
+            전화하기
+          </Button>
+          <Button onClick={() => setMessage(true)}>메세지 보내기</Button>
+        </ColumnBox>
         {/* 전화하기 버튼 눌렀을 때 */}
         {pageState === "call" && <Call />}
 
@@ -102,7 +109,7 @@ const CallingPresenter = () => {
         {/* 상대방으로부터 전화가 왔을 때 */}
         {pageState === "receive" && <Receive />}
 
-        {/* 전화 수신 중 화면 */}
+        {/* 전화 발신 중 중 화면 */}
         {pageState === "callLoading" && <CallLoading />}
       </Container>
       <Audio ref={myAudio} autoPlay playsInline />

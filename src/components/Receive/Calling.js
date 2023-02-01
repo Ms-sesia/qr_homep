@@ -5,38 +5,24 @@ import callingImage from "../../assets/callingImage/callingImage.svg";
 import phoneIcon from "../../assets/callingImage/phoneIcon.svg";
 import { CallingContext } from "../../pages/Calling/CallingContainer";
 
-const Container = styled.div`
-  width: 100%;
-  max-width: 390px;
-  height: 90vh;
-  max-height: 844px;
+const BoldText = styled.div`
+  font-size: 26px;
+  font-weight: bold;
+  margin-bottom: 12px;
+`;
+
+const Text = styled.div`
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 20px;
+  text-align: center;
+`;
+
+const TextBox = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  position: absolute;
-  padding: 0 20px;
-  margin: auto;
-  background-color: ${colors.whiteColor};
-  z-index: 1;
-  /* border: 1px solid red; */
-  overflow: hidden;
-`;
-
-const Text = styled.div`
-  font-size: ${({ fontSize }) => fontSize}px;
-  font-weight: ${({ fontWeight }) => fontWeight};
-  margin: ${({ margin }) => margin};
-  color: ${({ color }) => color};
-  cursor: ${({ CURSOR }) => CURSOR && "pointer"};
-`;
-
-const Image = styled.img`
-  ${({ ROTATE }) =>
-    ROTATE &&
-    css`
-      transform: rotate(135deg);
-    `}
 `;
 
 const CallButton = styled.div`
@@ -52,12 +38,18 @@ const CallButton = styled.div`
   cursor: pointer;
 `;
 
-const Calling = () => {
+const Image = styled.img`
+  ${({ ROTATE }) =>
+    ROTATE &&
+    css`
+      transform: rotate(135deg);
+    `}
+`;
+
+const Calling = ({ handleCallEnd }) => {
   const [hours, setHours] = useState(0);
   const [minutes, setMinutes] = useState(0);
   const [seconds, setSeconds] = useState(0);
-
-  const { handleCallEnd } = useContext(CallingContext);
 
   useEffect(() => {
     const time = setTimeout(() => {
@@ -76,26 +68,28 @@ const Calling = () => {
   }, [seconds, minutes, hours]);
 
   return (
-    <Container>
-      <Text fontSize={20} fontWeight="bold" margin="0 0 15px 0">
-        {"BMW X5"} 차주
+    <>
+      <TextBox>
+        <BoldText>BMW X5 걸려온 전화</BoldText>
+
+        <Text margin="0 0 77px 0" fontSize={14}>
+          {hours !== 0 && `${hours} : `}
+          {hours !== 0
+            ? minutes < 10
+              ? `0${minutes}`
+              : minutes
+            : minutes} : {seconds < 10 ? `0${seconds}` : seconds}
+        </Text>
+      </TextBox>
+      <Text>
+        안심하세요,
+        <br />
+        상대방은 전화번호를 알 수 없습니다.
       </Text>
-      <Text margin="0 0 77px 0" fontSize={14}>
-        {hours !== 0 && `${hours} : `}
-        {hours !== 0
-          ? minutes < 10
-            ? `0${minutes}`
-            : minutes
-          : minutes} : {seconds < 10 ? `0${seconds}` : seconds}
-      </Text>
-      <Image src={callingImage} />
-      {/* <Text fontSize={14} margin="15px 0 0 85px" CURSOR>
-        앱 보러가기
-      </Text> */}
       <CallButton onClick={() => handleCallEnd()}>
         <Image src={phoneIcon} ROTATE />
       </CallButton>
-    </Container>
+    </>
   );
 };
 

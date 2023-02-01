@@ -1,94 +1,26 @@
-import React, { useEffect, useRef, useState, createContext } from "react";
-import CallingPresenter from "./CallingPresenter";
+import React, { useEffect, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import io from "socket.io-client";
-import { useQuery } from "@apollo/client";
-import { SEND_CALL_NOTI } from "../../graphql/calling/subscription";
-import { useSubscription } from "@apollo/client";
-import { GET_RECEIVER_INFO } from "../../graphql/calling/query";
-import { useNavigate, useLocation } from "react-router-dom";
+import ReceivePresenter from "./ReceivePresenter";
 
-export const CallingContext = createContext();
-
-const CallingContainer = () => {
-  const [message, setMessage] = useState(false); //메세지 모달
-  const [call, setCall] = useState(false); //전화 걸었을 때 true
+const ReceiveContainer = () => {
   const [pageState, setPageState] = useState("main"); //띄울 화면
   const [myId, setMyId] = useState(""); // 내 소켓 아이디
-  let myPeerConnection; // 오디오 데이터가 담김
-  let myStream; // 내 마이크
-  const [roomName, setRoomName] = useState("abc"); // 방 이름
   const [randomStr, setRandomStr] = useState(
     Math.random().toString(36).substring(2, 12)
   ); // 나의 랜덤 subscription id
+  const [roomName, setRoomName] = useState("abc"); // 방 이름
+  let myPeerConnection; // 오디오 데이터가 담김
+  let myStream; // 내 마이크
   const myAudio = useRef(); // 내 마이크
   const peerAudio = useRef(); // 상대방 마이크
-  const [userId, setUserId] = useState(null);
   const navigate = useNavigate();
   const socket = useRef();
-  // 상대방 정보 가져오기
-
-  // Edward
-  const location = useLocation();
-  const qrCode = useRef();
-
-  React.useEffect(() => {
-    let initialCode = location.pathname.split("/")[2];
-
-    if (initialCode) {
-      localStorage.setItem("qrCode", initialCode);
-      navigate("/calling");
-    }
-  }, [location]);
-  React.useEffect(() => {
-    if (localStorage.getItem("qrCode")) {
-      qrCode.current = localStorage.getItem("qrCode");
-    }
-  }, []);
-  React.useEffect(() => {
-    console.info("qrCode", qrCode);
-  }, [qrCode]);
-
-  const {
-    data: receiverData,
-    loading: receiverLoading,
-    refetch: receiverRefetch,
-  } = useQuery(GET_RECEIVER_INFO, {
-    variables: {
-      qrSerial: randomStr,
-    },
-  });
-
-  // subscription 연결
-  const {
-    data: subData,
-    loading: subLoading,
-    error: subError,
-  } = useSubscription(SEND_CALL_NOTI, {
-    variables: {
-      userId: userId,
-    },
-  });
 
   useEffect(() => {
     // 내 subscription id 랜덤 생성
     setRandomStr(Math.random().toString(36).substring(2, 12));
   }, []);
-
-  useEffect(() => {
-    if (receiverData?.getReceiverInfo?.result) {
-      setUserId(receiverData.getReceiverInfo.user_id);
-      // console.log("receiverData::::::", receiverData);
-    }
-  }, [receiverData]);
-
-  useEffect(() => {
-    // console.log("subData::::::", subData, userId);
-    if (subData?.sendCallNoti) {
-    }
-    if (subError) {
-      console.log("subError>>>", subError);
-    }
-  }, [subData]);
 
   // 소켓 생성
   useEffect(() => {
@@ -100,7 +32,7 @@ const CallingContainer = () => {
     });
   }, []);
 
-  // useEffect(() => console.log("send socket>>>", socket), [socket]);
+  useEffect(() => console.log("receive socket>>>", socket), [socket]);
 
   // 내 스트림 가져오기 (오디오만)
   const getMedia = async () => {
@@ -120,7 +52,7 @@ const CallingContainer = () => {
     // peer에서 ice 이벤트를 보냄
     myPeerConnection.addEventListener("icecandidate", handleIce);
     socket.current.emit("join_room", roomName); //룸 입장 -> 서버에서 welcome 에밋 보내줌 (144번째줄)
-    // console.log("roomName", roomName);
+    console.log("roomName", roomName);
     myPeerConnection.addEventListener("addstream", handleAddStream); //아래 코드와 같은데 addstream은 이제 사용되지 않음 그래도 일단 코드는 넣어 놓고
     myPeerConnection.addEventListener("track", handleTrack);
     myStream.getTracks().forEach((track) => {
@@ -135,11 +67,12 @@ const CallingContainer = () => {
   };
 
   const handleAddStream = (data) => {
-    // console.log("Peer's Stream : ", data.stream);
-    // console.log("My Stream : ", myStream);
+    console.log("Peer's Stream : ", data.stream);
+    console.log("My Stream : ", myStream);
   };
 
   const handleTrack = (data) => {
+    console.log("handleTrack>>>", data);
     peerAudio.current.srcObject = data.streams[0]; //상대방 오디오 데이터가 넘어옴
     peerAudio.current.pause(); //일단 소리 끔
   };
@@ -150,21 +83,18 @@ const CallingContainer = () => {
     // console.log("연결됨");
   };
 
-  // 전화 걸기
-  const handleCallSend = async () => {
-    setPageState("callLoading");
-    socket.current.emit("sendCall", {
-      roomName: roomName,
-      user_id: 4,
-      qr_id: 147,
-    });
-    // console.log("전화 걺");
-  };
-
   // 전화 종료
   const handleCallEnd = async () => {
-    setPageState("main");
     socket.current.emit("end", roomName);
+    navigate("/");
+  };
+
+  // 전화 받기
+  const handleCallReceive = async () => {
+    setPageState("calling");
+    socket.current.emit("received", roomName);
+    peerAudio.current.play();
+    myAudio.current.play();
   };
 
   useEffect(() => {
@@ -172,7 +102,7 @@ const CallingContainer = () => {
 
     socket.current.on("myId", (id) => {
       setMyId(id);
-      // console.log("myId:", id);
+      console.log("myId:", id);
     });
 
     socket.current.on("welcome", async () => {
@@ -199,42 +129,25 @@ const CallingContainer = () => {
 
     // 전화가 왔을 경우
     socket.current.on("receiveCall", () => {
-      navigate("/receive");
       console.log("전화 옴");
-    });
-
-    // 내가 건 전화에 상대방이 받았을 경우
-    socket.current.on("received", () => {
-      setPageState("calling");
-      peerAudio.current.play();
     });
 
     // 전화 종료
     socket.current.on("close", () => {
       myPeerConnection.close();
-      setPageState("main");
+      // navigate("/");
     });
   }, []);
 
   return (
-    <CallingContext.Provider
-      value={{
-        message,
-        setMessage,
-        call,
-        setCall,
-        myAudio,
-        peerAudio,
-        pageState,
-        setPageState,
-        handleCallSend,
-        handleCallEnd,
-        userId,
-      }}
-    >
-      <CallingPresenter />
-    </CallingContext.Provider>
+    <ReceivePresenter
+      pageState={pageState}
+      handleCallReceive={handleCallReceive}
+      myAudio={myAudio}
+      peerAudio={peerAudio}
+      handleCallEnd={handleCallEnd}
+    />
   );
 };
 
-export default CallingContainer;
+export default ReceiveContainer;

@@ -1,9 +1,11 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect } from "react";
 import styled, { css } from "styled-components";
 import colors from "../../styles/colors";
 import callingImage from "../../assets/callingImage/callingImage.svg";
 import phoneIcon from "../../assets/callingImage/phoneIcon.svg";
 import { CallingContext } from "../../pages/Calling/CallingContainer";
+import { SEND_CALL_NOTI } from "../../graphql/calling/subscription";
+import { useSubscription } from "@apollo/client";
 
 const Container = styled.div`
   width: 100%;
@@ -12,7 +14,7 @@ const Container = styled.div`
   max-height: 844px;
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: space-around;
   align-items: center;
   position: absolute;
   padding: 0 20px;
@@ -52,19 +54,26 @@ const CallButton = styled.div`
   cursor: pointer;
 `;
 
+const ColumnBox = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+`;
+
 const CallLoading = () => {
   const { handleCallEnd } = useContext(CallingContext);
 
   return (
     <Container>
-      <Text fontSize={20} fontWeight="bold" margin="0 0 15px 0">
-        전화 수신 중
-      </Text>
+      <ColumnBox>
+        <Text fontSize={20} fontWeight="bold" margin="0 0 15px 0">
+          전화 발신 중
+        </Text>
 
-      <Text fontSize={20} fontWeight="bold" margin="0 0 15px 0">
-        {"BMW X5"} 차주
-      </Text>
-
+        <Text fontSize={20} fontWeight="bold" margin="0 0 15px 0">
+          {"BMW X5"} 차주
+        </Text>
+      </ColumnBox>
       <Image src={callingImage} />
       <CallButton onClick={() => handleCallEnd()}>
         <Image src={phoneIcon} ROTATE />
