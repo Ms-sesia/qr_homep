@@ -43,6 +43,7 @@ const CallButton = styled.div`
   margin-top: 88px;
   border-radius: 30px;
   background-color: ${colors.blackColor};
+  flex-shrink: 0;
   cursor: pointer;
 `;
 

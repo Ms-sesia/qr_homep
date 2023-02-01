@@ -5,12 +5,12 @@ import { createClient } from "graphql-ws";
 import { GraphQLWsLink } from "@apollo/client/link/subscriptions";
 
 const httpLink = new HttpLink({
-  uri: "https://testvoicesev.platcube.com/graphql",
+  uri: "https://devapi.seqret.co.kr/graphql",
 });
 
 const wsLink = new GraphQLWsLink(
   createClient({
-    url: "wss://testvoicesev.platcube.com/graphql",
+    url: "wss://devapi.seqret.co.kr/graphql",
   })
 );
 

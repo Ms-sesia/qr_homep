@@ -76,26 +76,31 @@ const CallingPresenter = () => {
   return (
     <>
       <Container>
-        <RowBox>
-          <Image src={appIcon} />
-          <Text fontSize={20} fontWeight="bold" TITLE>
-            번호가 보이지 않는 QR 카드 <br /> 안심 전화 솔루션, 시크릿
-          </Text>
-        </RowBox>
-        <ColumnBox>
-          <Image src={callingImage} />
-          <Text fontSize={14} CURSOR margin="10px 0 0 auto">
-            <a target="_blank" href="https://www.google.com">
-              앱 보러가기
-            </a>
-          </Text>
-        </ColumnBox>
-        <ColumnBox>
-          <Button BG onClick={() => setPageState("call")}>
-            전화하기
-          </Button>
-          <Button onClick={() => setMessage(true)}>메세지 보내기</Button>
-        </ColumnBox>
+        {pageState === "main" && (
+          <>
+            <RowBox>
+              <Image src={appIcon} />
+              <Text fontSize={20} fontWeight="bold" TITLE>
+                번호가 보이지 않는 QR 카드 <br /> 안심 전화 솔루션, 시크릿
+              </Text>
+            </RowBox>
+            <ColumnBox>
+              <Image src={callingImage} />
+              <Text fontSize={14} CURSOR margin="10px 0 0 auto">
+                <a target="_blank" href="https://www.google.com">
+                  앱 보러가기
+                </a>
+              </Text>
+            </ColumnBox>
+            <ColumnBox>
+              <Button BG onClick={() => setPageState("call")}>
+                전화하기
+              </Button>
+              <Button onClick={() => setMessage(true)}>메세지 보내기</Button>
+            </ColumnBox>
+          </>
+        )}
+
         {/* 전화하기 버튼 눌렀을 때 */}
         {pageState === "call" && <Call />}
 

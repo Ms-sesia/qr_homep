@@ -10,7 +10,7 @@ const Router = () => {
     <Routes>
       <Route path="/" element={<Home />} />
       <Route path="/calling/*" element={<Calling />} />
-      <Route path="/receive" element={<Receive />} />
+      <Route path="/receive/*" element={<Receive />} />
     </Routes>
   );
 };

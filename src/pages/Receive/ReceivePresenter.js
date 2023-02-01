@@ -113,6 +113,7 @@ const ReceivePresenter = ({
           <>
             <TextBox>
               <BoldText>전화오는중…</BoldText>
+
               <Text>
                 BMW X5 차량에서 걸려오는 전화입니다
                 <br />

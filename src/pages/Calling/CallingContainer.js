@@ -6,6 +6,7 @@ import { SEND_CALL_NOTI } from "../../graphql/calling/subscription";
 import { useSubscription } from "@apollo/client";
 import { GET_RECEIVER_INFO } from "../../graphql/calling/query";
 import { useNavigate, useLocation } from "react-router-dom";
+import eruda from "eruda";
 
 export const CallingContext = createContext();
 
@@ -16,16 +17,31 @@ const CallingContainer = () => {
   const [myId, setMyId] = useState(""); // 내 소켓 아이디
   let myPeerConnection; // 오디오 데이터가 담김
   let myStream; // 내 마이크
-  const [roomName, setRoomName] = useState("abc"); // 방 이름
-  const [randomStr, setRandomStr] = useState(
+  const [roomName, setRoomName] = useState(
     Math.random().toString(36).substring(2, 12)
-  ); // 나의 랜덤 subscription id
+  ); // 방 이름
   const myAudio = useRef(); // 내 마이크
   const peerAudio = useRef(); // 상대방 마이크
   const [userId, setUserId] = useState(null);
+  const [qrId, setQrId] = useState(null);
+  const [getDevices, setGetDevices] = useState(null);
   const navigate = useNavigate();
   const socket = useRef();
   // 상대방 정보 가져오기
+
+  const goBack = () => {
+    console.info("??? : ", window.ReactNativeWebView);
+    // if (window.ReactNativeWebView) {
+    //   // web
+    //   console.info("web : ", window.ReactNativeWebView);
+    // } else {
+    //   console.info("app : ", window.ReactNativeWebView);
+    // }
+  };
+
+  // useEffect(() => {
+  //   goBack();
+  // }, []);
 
   // Edward
   const location = useLocation();
@@ -39,14 +55,22 @@ const CallingContainer = () => {
       navigate("/calling");
     }
   }, [location]);
+
   React.useEffect(() => {
     if (localStorage.getItem("qrCode")) {
       qrCode.current = localStorage.getItem("qrCode");
     }
   }, []);
-  React.useEffect(() => {
-    console.info("qrCode", qrCode);
-  }, [qrCode]);
+
+  useEffect(
+    () =>
+      console.log("myPeerConnection", myPeerConnection, "myStream", myStream),
+    [myPeerConnection, myStream]
+  );
+
+  // React.useEffect(() => {
+  //   console.info("qrCode", qrCode);
+  // }, [qrCode]);
 
   const {
     data: receiverData,
@@ -54,7 +78,8 @@ const CallingContainer = () => {
     refetch: receiverRefetch,
   } = useQuery(GET_RECEIVER_INFO, {
     variables: {
-      qrSerial: randomStr,
+      // qrSerial: randomStr,
+      qrSerial: "230118194845C0019_00010",
     },
   });
 
@@ -69,43 +94,51 @@ const CallingContainer = () => {
     },
   });
 
-  useEffect(() => {
-    // 내 subscription id 랜덤 생성
-    setRandomStr(Math.random().toString(36).substring(2, 12));
-  }, []);
+  // useEffect(() => {
+  //   console.log(subData, receiverData);
+  // }, [subData, receiverData]);
 
   useEffect(() => {
-    if (receiverData?.getReceiverInfo?.result) {
-      setUserId(receiverData.getReceiverInfo.user_id);
-      // console.log("receiverData::::::", receiverData);
-    }
-  }, [receiverData]);
+    eruda.init();
 
-  useEffect(() => {
-    // console.log("subData::::::", subData, userId);
-    if (subData?.sendCallNoti) {
-    }
-    if (subError) {
-      console.log("subError>>>", subError);
-    }
-  }, [subData]);
-
-  // 소켓 생성
-  useEffect(() => {
-    socket.current = io("https://testvoicesev.platcube.com/", {
+    // 소켓 생성
+    socket.current = io("https://devapi.seqret.co.kr", {
       cors: {
         origin: "*",
         credentials: true,
       },
     });
+    // myAudio.current.pause(); //일단 소리 끔
+    // peerAudio.current.pause();
   }, []);
 
-  // useEffect(() => console.log("send socket>>>", socket), [socket]);
+  useEffect(() => {
+    if (receiverData?.getReceiverInfo?.result) {
+      setUserId(receiverData.getReceiverInfo.user_id);
+      setQrId(receiverData.getReceiverInfo.qr_id);
+    }
+  }, [receiverData]);
+
+  useEffect(() => {
+    if (subData?.sendCallNoti) {
+    }
+    if (subError) {
+      // console.log("subError>>>", subError);
+    }
+  }, [subData]);
 
   // 내 스트림 가져오기 (오디오만)
   const getMedia = async () => {
     try {
-      myStream = await navigator.mediaDevices.getUserMedia({ audio: true }); //내 오디오 세팅
+      // const devices = await navigator.mediaDevices.enumerateDevices();
+      // console.log("device list =>>", devices);
+
+      myStream = await navigator.mediaDevices.getUserMedia({
+        // video: true,
+        audio: true,
+      }); //내 오디오 세팅
+      myAudio.current.srcObject = myStream;
+      // myAudio.current.pause();
     } catch (e) {
       console.log(e);
     }
@@ -113,13 +146,28 @@ const CallingContainer = () => {
 
   //
   const makeConnection = async () => {
-    myPeerConnection = new RTCPeerConnection(); //나(peer)와 원격의 상대방(peer)과의 연결 만들기
+    myPeerConnection = new RTCPeerConnection({
+      iceServers: [
+        {
+          urls: [
+            "stun:stun.l.google.com:19302",
+            "stun:stun1.l.google.com:19302",
+            "stun:stun2.l.google.com:19302",
+            "stun:stun3.l.google.com:19302",
+            "stun:stun4.l.google.com:19302",
+          ],
+        },
+      ],
+    }); //나(peer)와 원격의 상대방(peer)과의 연결 만들기
 
     // 인터넷 연결 생성 (Internet Connectivity Establishment)
     // 이 연결을 해줘야 브라우저끼리 소통이 가능
     // peer에서 ice 이벤트를 보냄
     myPeerConnection.addEventListener("icecandidate", handleIce);
-    socket.current.emit("join_room", roomName); //룸 입장 -> 서버에서 welcome 에밋 보내줌 (144번째줄)
+
+    // 전달 매개변수는 roomName, 수신단(receive)or발신단(call)
+    socket.current.emit("join_room", roomName, "call"); //룸 입장 -> 서버에서 welcome 에밋 보내줌 (144번째줄)
+
     // console.log("roomName", roomName);
     myPeerConnection.addEventListener("addstream", handleAddStream); //아래 코드와 같은데 addstream은 이제 사용되지 않음 그래도 일단 코드는 넣어 놓고
     myPeerConnection.addEventListener("track", handleTrack);
@@ -135,19 +183,21 @@ const CallingContainer = () => {
   };
 
   const handleAddStream = (data) => {
-    // console.log("Peer's Stream : ", data.stream);
-    // console.log("My Stream : ", myStream);
+    console.log("Peer's Stream : ", data.stream);
+    console.log("My Stream : ", myStream);
+    peerAudio.current.srcObject = data.streams; //상대방 오디오 데이터가 넘어옴
+    peerAudio.current.pause();
   };
 
   const handleTrack = (data) => {
+    console.log("handleTrack>>>", data);
     peerAudio.current.srcObject = data.streams[0]; //상대방 오디오 데이터가 넘어옴
-    peerAudio.current.pause(); //일단 소리 끔
+    peerAudio.current.pause();
   };
 
   const initCall = async () => {
     await getMedia(); // 내 마이크 가져오기
     makeConnection(); // socket.current.io 연결시 필수 코드
-    // console.log("연결됨");
   };
 
   // 전화 걸기
@@ -155,29 +205,34 @@ const CallingContainer = () => {
     setPageState("callLoading");
     socket.current.emit("sendCall", {
       roomName: roomName,
-      user_id: 4,
-      qr_id: 147,
+      user_id: userId,
+      qr_id: qrId,
     });
-    // console.log("전화 걺");
   };
 
   // 전화 종료
   const handleCallEnd = async () => {
     setPageState("main");
     socket.current.emit("end", roomName);
+    myAudio.current.pause(); //일단 소리 끔
+    peerAudio.current.pause();
+    // navigate("/");
   };
 
   useEffect(() => {
     initCall();
+    // setRoomName(randomStr);
+    // console.log("roomName :", roomName);
 
     socket.current.on("myId", (id) => {
       setMyId(id);
       // console.log("myId:", id);
     });
 
-    socket.current.on("welcome", async () => {
+    socket.current.on("welcome", async (id) => {
+      console.log("myId :", id);
       const offer = await myPeerConnection.createOffer(); //WebRTC 연결 시작
-      console.log("offer", offer);
+      // console.log("offer", offer);
       myPeerConnection.setLocalDescription(offer); //연결에 관련된 내용
       socket.current.emit("offer", offer, roomName); // offer 에밋 보내면 서버에서 offer 다시 보냄 방에 있는 사람들 WebRTC 연결 다 됨
     });
@@ -207,12 +262,19 @@ const CallingContainer = () => {
     socket.current.on("received", () => {
       setPageState("calling");
       peerAudio.current.play();
+      // myAudio.current.play();
     });
 
     // 전화 종료
     socket.current.on("close", () => {
       myPeerConnection.close();
+      // myAudio.current.pause(); //일단 소리 끔
+      peerAudio.current.pause();
       setPageState("main");
+    });
+    // 더이상 방에 입장 불가
+    socket.current.on("cannotJoinRoom", (msg) => {
+      // console.log(msg);
     });
   }, []);
 
