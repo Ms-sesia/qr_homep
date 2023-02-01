@@ -35,6 +35,7 @@ const CallButton = styled.div`
   margin-top: 88px;
   border-radius: 50%;
   background-color: ${colors.redColor};
+  flex-shrink: 0;
   cursor: pointer;
 `;
 

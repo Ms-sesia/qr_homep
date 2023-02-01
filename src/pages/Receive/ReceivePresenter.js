@@ -90,12 +90,15 @@ const BottomHalfNavButton = styled.div`
   cursor: pointer;
 `;
 
-const Audio = styled.video`
-  width: 0;
-  height: 0;
-  position: fixed;
-  top: -1000px;
-  left: -1000px;
+const Audio = styled.audio`
+  width: 500px;
+  height: 500px;
+  border: 1px solid red;
+  //width: 0;
+  //height: 0;
+  //position: fixed;
+  //top: -1000px;
+  //left: -1000px;
 `;
 
 const ReceivePresenter = ({
@@ -105,6 +108,8 @@ const ReceivePresenter = ({
   peerAudio,
 
   handleCallEnd,
+
+  handleRejectCall,
 }) => {
   return (
     <>
@@ -113,6 +118,7 @@ const ReceivePresenter = ({
           <>
             <TextBox>
               <BoldText>전화오는중…</BoldText>
+
               <Text>
                 BMW X5 차량에서 걸려오는 전화입니다
                 <br />
@@ -128,7 +134,7 @@ const ReceivePresenter = ({
               >
                 받기
               </BottomHalfNavButton>
-              <BottomHalfNavButton>거절</BottomHalfNavButton>
+              <BottomHalfNavButton onClick={handleRejectCall}>거절</BottomHalfNavButton>
             </BottonBox>
           </>
         ) : (

@@ -9,6 +9,7 @@
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
     "apollo-link-ws": "^1.0.20",
+    "eruda": "^2.11.2",
     "graphql": "^16.6.0",
     "graphql-tag": "^2.12.6",
     "graphql-ws": "^5.11.2",

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, {useState, useEffect, useContext} from "react";
 import styled from "styled-components";
 import callingImage from "../../assets/callingImage/callingImage.svg";
 import phoneIcon from "../../assets/callingImage/phoneIcon.svg";
@@ -6,29 +6,32 @@ import messageIcon from "../../assets/callingImage/messageIcon.svg";
 import colors from "../../styles/colors";
 import MessageModal from "./MessageModal";
 import Calling from "./Calling";
-import { CallingContext } from "../../pages/Calling/CallingContainer";
+import {CallingContext} from "../../pages/Calling/CallingContainer";
 
-const Container = styled.div`
+const Wrapper = styled.div`
   width: 100%;
   max-width: 390px;
   height: 90vh;
   max-height: 844px;
+`;
+
+const Container = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  position: absolute;
+  //position: absolute;
   padding: 0 20px;
   margin: auto;
   background-color: ${colors.whiteColor};
   z-index: 1;
-  /* border: 1px solid red; */
+  //border: 1px solid red;
 `;
 const Text = styled.div`
-  font-size: ${({ fontSize }) => fontSize}px;
-  font-weight: ${({ fontWeight }) => fontWeight};
-  margin: ${({ margin }) => margin};
-  color: ${({ color }) => color};
+  font-size: ${({fontSize}) => fontSize}px;
+  font-weight: ${({fontWeight}) => fontWeight};
+  margin: ${({margin}) => margin};
+  color: ${({color}) => color};
 `;
 
 const Image = styled.img``;
@@ -43,6 +46,7 @@ const CallButton = styled.div`
   margin-top: 88px;
   border-radius: 30px;
   background-color: ${colors.blackColor};
+  flex-shrink: 0;
   cursor: pointer;
 `;
 
@@ -74,60 +78,62 @@ const Triangle = styled.div`
 `;
 
 const Call = () => {
-  const [display, setDisplay] = useState(true);
+    const [display, setDisplay] = useState(true);
 
-  const { pageState, handleCallSend, setMessage, message } =
-    useContext(CallingContext);
+    const {pageState, handleCallSend, setMessage, message} =
+        useContext(CallingContext);
 
-  useEffect(() => {
-    setTimeout(() => {
-      setDisplay(false);
-    }, 3000);
-  }, []);
+    useEffect(() => {
+        setTimeout(() => {
+            setDisplay(false);
+        }, 3000);
+    }, []);
 
-  return (
-    <Container>
-      <Text fontSize={20} fontWeight="bold">
-        전화걸기
-      </Text>
-      <Text fontSize={26} fontWeight="bold" margin="20px 0 54px 0 ">
-        BMW X5 차주
-      </Text>
-      <Image src={callingImage} />
-      <CallButton onClick={() => handleCallSend()}>
-        <Image src={phoneIcon} />
-        {display && (
-          <MessageBox>
-            <Text
-              fontSize={14}
-              color={colors.whiteColor}
-              fontWeight="bold"
-              margin="0 0 10px 0"
-            >
-              통화 버튼을 눌러 전화를
-            </Text>
-            <Text fontSize={14} color={colors.whiteColor} fontWeight="bold">
-              걸어보세요
-            </Text>
-            <Triangle />
-          </MessageBox>
-        )}
-      </CallButton>
-      <MessageButton>
-        <Image src={messageIcon} />
-        <Text
-          fontWeight={300}
-          color={colors.grayFontColor}
-          margin="0 0 0 10px"
-          onClick={() => setMessage(true)}
-        >
-          메시지 보내기
-        </Text>
-      </MessageButton>
-      {message && <MessageModal />}
-      {pageState === "calling" && <Calling />}
-    </Container>
-  );
+    return (
+        <Wrapper>
+            <Container>
+                <Text fontSize={20} fontWeight="bold">
+                    전화걸기
+                </Text>
+                <Text fontSize={26} fontWeight="bold" margin="20px 0 54px 0 ">
+                    BMW X5 차주
+                </Text>
+                <Image src={callingImage}/>
+                <CallButton onClick={() => handleCallSend()}>
+                    <Image src={phoneIcon}/>
+                    {display && (
+                        <MessageBox>
+                            <Text
+                                fontSize={14}
+                                color={colors.whiteColor}
+                                fontWeight="bold"
+                                margin="0 0 10px 0"
+                            >
+                                통화 버튼을 눌러 전화를
+                            </Text>
+                            <Text fontSize={14} color={colors.whiteColor} fontWeight="bold">
+                                걸어보세요
+                            </Text>
+                            <Triangle/>
+                        </MessageBox>
+                    )}
+                </CallButton>
+                <MessageButton>
+                    <Image src={messageIcon}/>
+                    <Text
+                        fontWeight={300}
+                        color={colors.grayFontColor}
+                        margin="0 0 0 10px"
+                        onClick={() => setMessage(true)}
+                    >
+                        메시지 보내기
+                    </Text>
+                </MessageButton>
+                {message && <MessageModal/>}
+                {pageState === "calling" && <Calling/>}
+            </Container>
+        </Wrapper>
+    );
 };
 
 export default Call;
