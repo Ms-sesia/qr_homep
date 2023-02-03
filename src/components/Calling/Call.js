@@ -6,7 +6,7 @@ import messageIcon from "../../assets/callingImage/messageIcon.svg";
 import colors from "../../styles/colors";
 import MessageModal from "./MessageModal";
 import Calling from "./Calling";
-import {CallingContext} from "../../pages/Calling/CallingContainer";
+import {CallingContext} from "../../pages/SendbirdCalling/CallingContainer";
 
 const Wrapper = styled.div`
   width: 100%;
@@ -80,8 +80,7 @@ const Triangle = styled.div`
 const Call = () => {
     const [display, setDisplay] = useState(true);
 
-    const {pageState, handleCallSend, setMessage, message} =
-        useContext(CallingContext);
+    const {pageState, handleSendCall, setMessage, message} = useContext(CallingContext);
 
     useEffect(() => {
         setTimeout(() => {
@@ -99,7 +98,7 @@ const Call = () => {
                     BMW X5 차주
                 </Text>
                 <Image src={callingImage}/>
-                <CallButton onClick={() => handleCallSend()}>
+                <CallButton onClick={() => handleSendCall()}>
                     <Image src={phoneIcon}/>
                     {display && (
                         <MessageBox>

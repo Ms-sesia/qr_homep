@@ -1,14 +1,17 @@
-import React, { useEffect, useState } from "react";
+import React, {useEffect, useState} from "react";
 import Router from "./Router";
 import GlobalStyles from "./styles/GlobalStyles";
 
 const App = () => {
-  return (
-    <>
-      <GlobalStyles />
-      <Router />
-    </>
-  );
+    console.log = function no_console() {};
+
+
+    return (
+        <>
+            <GlobalStyles/>
+            <Router/>
+        </>
+    );
 };
 
 export default App;

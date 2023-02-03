@@ -1,9 +1,9 @@
 import React from "react";
 import { Route, Routes } from "react-router-dom";
-import CallLoading from "./components/Calling/CallLoading";
-import Calling from "./pages/Calling";
 import Home from "./pages/Home";
-import Receive from "./pages/Receive";
+import Calling from "./pages/SendbirdCalling";
+import Receive from "./pages/SendbirdReceive";
+import CallLoading from "./components/Calling/CallLoading";
 
 const Router = () => {
   return (
