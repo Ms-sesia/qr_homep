@@ -1,5 +1,5 @@
 import React from "react";
-import styled, {css, keyframes} from "styled-components";
+import styled, { css, keyframes } from "styled-components";
 import colors from "../../styles/colors";
 import callingIcon from "../../assets/callingImage/callingIcon.png";
 import Calling from "../../components/Receive/Calling";
@@ -39,17 +39,17 @@ const TextBox = styled.div`
 `;
 
 const Image = styled.img`
-  ${({operAni}) =>
-          operAni &&
-          css`
-            animation: ${callingAnimation} 3s infinite;
-          `}
+  ${({ operAni }) =>
+    operAni &&
+    css`
+      animation: ${callingAnimation} 3s infinite;
+    `}
 
-  ${({ROTATE}) =>
-          ROTATE &&
-          css`
-            transform: rotate(135deg);
-          `}
+  ${({ ROTATE }) =>
+    ROTATE &&
+    css`
+      transform: rotate(135deg);
+    `}
 `;
 
 const BoldText = styled.div`
@@ -102,48 +102,35 @@ const Audio = styled.audio`
   //left: -1000px;
 `;
 
-const ReceivePresenter = ({
-                              pageState,
-                              handleReceiveCall,
-                              myAudio,
-                              peerAudio,
+const ReceivePresenter = ({ pageState, handleReceiveCall, myAudio, peerAudio, handleCallEnd, handleRejectCall }) => {
+  return (
+    <>
+      <View>
+        {pageState === "main" ? (
+          <>
+            <TextBox>
+              <BoldText>전화오는중…</BoldText>
 
-                              handleCallEnd,
-
-                              handleRejectCall,
-                          }) => {
-    return (
-        <>
-            <View>
-                {pageState === "main" ? (
-                    <>
-                        <TextBox>
-                            <BoldText>전화오는중…</BoldText>
-
-                            <Text>
-                                BMW X5 차량에서 걸려오는 전화입니다
-                                <br/>
-                                안심하세요, 전화번호는 노출되지않습니다
-                            </Text>
-                        </TextBox>
-                        <Image operAni src={callingIcon}/>
-                        <BottonBox>
-                            <BottomHalfNavButton
-                                onClick={() => handleReceiveCall()}
-                            >
-                                받기
-                            </BottomHalfNavButton>
-                            <BottomHalfNavButton onClick={handleRejectCall}>거절</BottomHalfNavButton>
-                        </BottonBox>
-                    </>
-                ) : (
-                    pageState === "calling" && <Calling handleCallEnd={handleCallEnd}/>
-                )}
-            </View>
-            <Audio ref={myAudio} autoPlay playsInline/>
-            <Audio ref={peerAudio} autoPlay playsInline/>
-        </>
-    );
+              <Text>
+                BMW X5 차량에서 걸려오는 전화입니다
+                <br />
+                안심하세요, 전화번호는 노출되지않습니다
+              </Text>
+            </TextBox>
+            <Image operAni src={callingIcon} />
+            <BottonBox>
+              <BottomHalfNavButton onClick={() => handleReceiveCall()}>받기</BottomHalfNavButton>
+              <BottomHalfNavButton onClick={handleRejectCall}>거절</BottomHalfNavButton>
+            </BottonBox>
+          </>
+        ) : (
+          pageState === "calling" && <Calling handleCallEnd={handleCallEnd} />
+        )}
+      </View>
+      <Audio ref={myAudio} autoPlay playsInline />
+      <Audio ref={peerAudio} autoPlay playsInline />
+    </>
+  );
 };
 
 export default ReceivePresenter;

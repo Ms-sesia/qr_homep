@@ -1,156 +1,184 @@
-import React, {useCallback, useEffect, useRef, useState} from "react";
-import {useNavigate} from "react-router-dom";
-import SendBirdCall from 'sendbird-calls';
+import React, { useCallback, useEffect, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import SendBirdCall from "sendbird-calls";
+// import SendBirdCall from "../../libs/Sendbirdcallinfo";
 import ReceivePresenter from "./ReceivePresenter";
 import eruda from "eruda";
-import {APP_ID, TOKEN} from "../../constants";
+import { APP_ID, TOKEN, CALLER_SB_ID, RECEIVER_SB_ID } from "../../constants";
+// import { AskBrowserPermission, authOption, AuthorizeUser, WaitForCalls } from "../../libs/Sb_method";
 
 const ReceiveContainer = () => {
-    const navigate = useNavigate();
-    const [pageState, setPageState] = useState("main"); //띄울 화면
-    const myAudio = useRef(); // 내 마이크
-    const peerAudio = useRef(); // 상대방 마이크
-    let myStream;
-    const authOption = {userId: 'user1', accessToken: TOKEN};
-    const dialParams = {
-        userId: 'user2',
-        isVideoCall: false,
-        callOption: {
-            localMediaView: myAudio.current,
-            audioEnabled: true,
-        }
-    }
-    // 내 스트림 가져오기 (오디오만)
-    const getMedia = async () => {
-        try {
-            myStream = await navigator.mediaDevices.getUserMedia({
-                audio: true,
-                video: true,
-            }); //내 오디오 세팅
-        } catch (e) {
-            console.log(e);
-        }
-    };
+  const navigate = useNavigate();
+  const [pageState, setPageState] = useState("main"); //띄울 화면
+  const myAudio = useRef(); // 내 마이크
+  const peerAudio = useRef(); // 상대방 마이크
+  let myStream;
+  let currentCall;
 
-    useEffect(() => {
-        getMedia();
-        eruda.init();
-        SendBirdCall.init(APP_ID);
+  // const RECEIVER_SB_ID = Math.random().toString(36).substring(2, 12);
 
-        connectionSendBird().then(() => {
-            SendBirdCall.addListener('user1', {
-                onRinging: (call) => {
-                    console.info("call : ", call);
-                }
-            });
-        }).catch(e => console.info(e));
-
-        // SendBirdCall.addListener('user1', {
-        //     onRinging: (call) => {
-        //         console.info("call : ", call);
-        //     }
-        // });
-    }, []);
-
-    const connectionSendBird = useCallback(async () => {
-        try {
-            await SendBirdCall.authenticate(authOption, (result, error) => {
-                if (error) {
-                    alert("인증 실패");
-                    console.info("사용자 인증 실패 :", error);
-                } else {
-                    // console.info("사용자 인증 성공");
-                }
-            });
-            await SendBirdCall.connectWebSocket();
-        } catch (e) {
-            console.info(e);
-        }
-    }, [SendBirdCall, authOption]);
-
-    const call = useCallback(() => {
-        SendBirdCall.dial(dialParams, (call, error) => {
-            if (error) {
-                console.info("전화 연결 실패 : ", error);
-            }
-            console.info("전화 연결 성공 : ");
-        });
-    }, [SendBirdCall]);
+  /** 수신자 로직
+   * noti(subscription) 통해서 접속하자마자
+   * 1. sendbird 초기화
+   * 2. 브라우저 미디어 디바이스 허용 권한 받기
+   * 3. query통해서 userId 수신
+   * 4. sendbird user 인증
+   * 5. sendbird listener 진행
+   * 6. established and call
+   */
+  // query 통해 받아온 userId (렌더링 되기 전에 받아와야할 듯?)
+  const userId = "user2";
 
   useEffect(() => {
-    // call.setLocalMediaView(myAudio.current);
-    call.onEstablished = (call) => console.info("onEstablished : ", call);
-    call.onConnected = (call) => console.info("onConnected : ", call);
-    call.onEnded = (call) => console.info("onEnded : ", call);
-    call.onRemoteAudioSettingsChanged = (call) => console.info("onRemoteAudioSettingsChanged : ", call);
-    call.onRemoteVideoSettingsChanged = (call) => console.info("onRemoteVideoSettingsChanged : ", call);
-  }, [call]);
+    eruda.init();
+    SendBirdCall.init(APP_ID);
 
-    useEffect(() => {
-        SendBirdCall.addListener('user1', {
-            onRinging: (call) => {
-                call.onEstablished = (call) => {
-                    //...
-                };
+    // 미디어 장치 가져옴
+    AskBrowserPermission();
 
-                call.onConnected = (call) => {
-                    //...
-                };
+    // 웹소켓 연결
+    AuthorizeUser();
+    console.info("RECEIVER_SB_ID:", RECEIVER_SB_ID);
+  }, []);
 
-                call.onEnded = (call) => {
-                    //...
-                };
+  // 웹 미디어장치 받아오기
+  const AskBrowserPermission = () => {
+    SendBirdCall.useMedia({ audio: true, video: false });
+    console.info("브라우저 미디어 가져오기 완료.");
+  };
 
-                call.onRemoteAudioSettingsChanged = (call) => {
-                    //...
-                };
+  // sendbird 등록 사용자 인증
+  const AuthorizeUser = async () => {
+    const authOption = { userId, accessToken: TOKEN };
+    await SendBirdCall.authenticate(authOption, async (res, error) => {
+      if (error) console.info("인증 에러 :", error);
+      else {
+        console.log("SB 연결완료.");
+        connectToWebsocket();
+        //   try {
+        //     await SendBirdCall.connectWebSocket();
+        //     console.info(`'${authOption.userId}'소켓 연결 성공!!`);
+        //     WaitForCalls();
+        //   } catch (e) {
+        //     console.info(`'${authOption.userId}'소켓 연결 실패 :`, e);
+        //   }
+      }
+    });
+  };
 
-                call.onRemoteVideoSettingsChanged = (call) => {
-                    //...
-                };
+  const connectToWebsocket = () => {
+    SendBirdCall.connectWebSocket()
+      .then(() => {
+        WaitForCalls();
+      })
+      .catch((err) => {
+        console.log("웹 소켓 연결 에러 : ", err);
+        alert("Failed to connect to Socket server");
+      });
+  };
 
-                const acceptParams = {
-                    callOption: {
-                        localMediaView: document.getElementById('local_video_element_id'),
-                        remoteMediaView: document.getElementById('remote_video_element_id'),
-                        audioEnabled: true,
-                        videoEnabled: true
-                    }
-                };
+  const WaitForCalls = () => {
+    SendBirdCall.addListener(RECEIVER_SB_ID, {
+      // 전화옮!
+      onRinging: (call) => {
+        console.log("전화가 왔다?? call정보:", call);
+        currentCall = call;
+        // 통화 성사
+        call.onEstablished = (call) => {
+          console.log("수신자 통화 성사");
+          currentCall = call;
+        };
 
-                call.accept(acceptParams);
-            }
-        });
-    }, [SendBirdCall]);
+        call.onConnected = (call) => {
+          console.log("전화 연결.");
+          currentCall = call;
+        };
 
-    const handleRejectCall = useCallback(() => { // 수신거부
-        if (window.ReactNativeWebView) { // React Native
-            window.ReactNativeWebView.postMessage("GO_BACK");
-        }
-    }, []);
+        call.onEnded = (call) => {
+          console.log("전화 종료.");
+          currentCall = call;
+        };
+        console.log("call info in wait for calls:", call);
+        const acceptParams = {
+          callOption: {
+            localMediaView: document.getElementById("local_video_element_id"),
+            remoteMediaView: document.getElementById("remote_video_element_id"),
+            audioEnabled: true,
+            videoEnabled: false,
+          },
+        };
+        call.accept(acceptParams);
+      },
 
-    const handleReceiveCall = useCallback(async () => {
-        try {
+      // 현재 연결된 device, 연결 가능한 device에서 선택해서 변경
+      onAudioInputDeviceChanged: async (current, availables) => {
+        const wannaUseMicInfo = availables.find((available) => available.label === "Headset earpiece");
 
-        } catch (e) {
+        // 안드로이드 Headset earpiece 로 변경함.
+        if (wannaUseMicInfo) SendBirdCall.selectAudioInputDevice(wannaUseMicInfo);
+        console.info("전화대기! RECEIVER_ID:", RECEIVER_SB_ID);
+      },
+    });
+  };
+  // const authOption = (userId, accessToken) => ({
+  //   userId,
+  //   accessToken,
+  // });
 
-        }
-    }, []);
+  const handleReceiveCall = useCallback(async () => {
+    console.info("전화 받기!");
+    console.info(RECEIVER_SB_ID);
+    SendBirdCall.addListener(RECEIVER_SB_ID, {
+      // 전화옮!
+      onRinging: (call) => {
+        console.log("전화가 왔다?? call정보:", call);
+        currentCall = call;
+        // 통화 성사
+        call.onEstablished = (call) => {
+          console.log("수신자 통화 성사");
+          currentCall = call;
+        };
 
+        call.onConnected = (call) => {
+          console.log("전화 연결.");
+          currentCall = call;
+        };
 
-    useEffect(() => {
-        console.info("",)
-    }, []);
+        call.onEnded = (call) => {
+          console.log("전화 종료.");
+          currentCall = call;
+        };
+        console.log("발신 정보:", call);
+        const acceptParams = {
+          callOption: {
+            localMediaView: document.getElementById("local_video_element_id"),
+            remoteMediaView: document.getElementById("remote_video_element_id"),
+            audioEnabled: true,
+            videoEnabled: false,
+          },
+        };
+        call.accept(acceptParams);
+      },
+    });
+  }, []);
 
-    return (
-        <ReceivePresenter
-            pageState={pageState}
-            myAudio={myAudio}
-            peerAudio={peerAudio}
-            handleReceiveCall={handleReceiveCall}
-            handleRejectCall={handleRejectCall}
-        />
-    );
+  const handleRejectCall = useCallback(() => {
+    // 수신거부
+    if (window.ReactNativeWebView) {
+      // React Native
+      window.ReactNativeWebView.postMessage("GO_BACK");
+    }
+  }, []);
+
+  return (
+    <ReceivePresenter
+      pageState={pageState}
+      myAudio={myAudio}
+      peerAudio={peerAudio}
+      handleReceiveCall={handleReceiveCall}
+      handleRejectCall={handleRejectCall}
+    />
+  );
 };
 
 export default ReceiveContainer;
